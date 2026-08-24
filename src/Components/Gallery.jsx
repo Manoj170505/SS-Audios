@@ -1,14 +1,86 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://ss-audios-backend-production.up.railway.app/api";
+
+const DEFAULT_GALLERY_ITEMS = [
+  {
+    id: 1,
+    title: "Festival Mainstage",
+    category: "Live Set",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
+  },
+  {
+    id: 2,
+    title: "Light Show Sync",
+    category: "Visual FX",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+  },
+  {
+    id: 3,
+    title: "Crowd Vibration",
+    category: "Nightclub",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+  },
+  {
+    id: 4,
+    title: "Live Stem Remixing",
+    category: "Studio Live",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+  },
+  {
+    id: 5,
+    title: "Stage Pyrotechnics",
+    category: "Concert",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4",
+  },
+  {
+    id: 6,
+    title: "Rooftop Lounge Set",
+    category: "Sunset Vibes",
+    video:
+      "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+  },
+];
 
 export default function VideoGallerySection() {
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const [galleryItems, setGalleryItems] = useState(DEFAULT_GALLERY_ITEMS);
 
-  // -------------------------------------------------------------
-  // CAROUSEL SPEED SETTING:
-  // Increase this number to make it scroll faster (e.g., 1.5, 2.0)
-  // Decrease this number to make it scroll slower (e.g., 0.4, 0.5)
-  // -------------------------------------------------------------
   const SCROLL_SPEED = 4.2;
+
+  // Fetch live video assets from backend DynamoDB / S3
+  useEffect(() => {
+    const fetchLiveMedia = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/media`);
+        const result = await res.json();
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const videoItems = result.data.filter(item => item.type === "video" || item.type === "image");
+          if (videoItems.length > 0) {
+            const mapped = videoItems.map(item => ({
+              id: item.id,
+              title: item.title,
+              category: item.category || "Live Event",
+              video: item.url || `${API_BASE_URL}/media/stream/${item.id}`,
+              type: item.type
+            }));
+            setGalleryItems(mapped);
+          }
+        }
+      } catch (err) {
+        console.log("Using default video gallery items (backend offline/loading)");
+      }
+    };
+
+    fetchLiveMedia();
+  }, []);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -17,10 +89,8 @@ export default function VideoGallerySection() {
     let animationFrameId;
 
     const scroll = () => {
-      // Increments scroll position from right to left
       container.scrollLeft += SCROLL_SPEED;
 
-      // Loop back smoothly once reaching half the duplicated track width
       if (container.scrollLeft >= container.scrollWidth / 2) {
         container.scrollLeft = 0;
       }
@@ -30,7 +100,6 @@ export default function VideoGallerySection() {
 
     animationFrameId = requestAnimationFrame(scroll);
 
-    // Pause animation when hovering over the carousel
     const handleMouseEnter = () => cancelAnimationFrame(animationFrameId);
     const handleMouseLeave = () => {
       animationFrameId = requestAnimationFrame(scroll);
@@ -46,55 +115,15 @@ export default function VideoGallerySection() {
         container.removeEventListener("mouseleave", handleMouseLeave);
       }
     };
-  }, []);
+  }, [galleryItems]);
 
-  const galleryItems = [
-    {
-      id: 1,
-      title: "Festival Mainstage",
-      category: "Live Set",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
-    },
-    {
-      id: 2,
-      title: "Light Show Sync",
-      category: "Visual FX",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
-    },
-    {
-      id: 3,
-      title: "Crowd Vibration",
-      category: "Nightclub",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
-    },
-    {
-      id: 4,
-      title: "Live Stem Remixing",
-      category: "Studio Live",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
-    },
-    {
-      id: 5,
-      title: "Stage Pyrotechnics",
-      category: "Concert",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4",
-    },
-    {
-      id: 6,
-      title: "Rooftop Lounge Set",
-      category: "Sunset Vibes",
-      video:
-        "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
-    },
-  ];
+  const handleExploreFullGallery = () => {
+    navigate("/gallery");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <section className="bg-[#141010] text-[#FAF6F6] py-20 px-4 sm:px-6 lg:px-8 overflow-hidden font-sans border-b border-[#2B2323] relative">
+    <section id="gallery" className="bg-[#141010] text-[#FAF6F6] py-20 px-4 sm:px-6 lg:px-8 overflow-hidden font-sans border-b border-[#2B2323] relative">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#F70776]/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -130,22 +159,30 @@ export default function VideoGallerySection() {
               msOverflowStyle: "none",
             }}
           >
-            {/* Duplicate array twice for smooth infinite loop */}
+            {/* Duplicate array for smooth infinite loop */}
             {[...galleryItems, ...galleryItems, ...galleryItems].map(
               (item, idx) => (
                 <div
                   key={`${item.id}-${idx}`}
                   className="relative shrink-0 w-64 sm:w-72 lg:w-80 h-96 sm:h-[420px] rounded-3xl overflow-hidden border border-[#2B2323] hover:border-[#F70776] transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(247,7,118,0.25)] bg-[#1C1717] group"
                 >
-                  {/* Playing Video */}
-                  <video
-                    src={item.video}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
-                  />
+                  {/* Playing Video or Photo */}
+                  {item.type === "image" ? (
+                    <img
+                      src={item.video}
+                      alt={item.title}
+                      className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
+                    />
+                  ) : (
+                    <video
+                      src={item.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
+                    />
+                  )}
 
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/30 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-300" />
@@ -193,7 +230,10 @@ export default function VideoGallerySection() {
 
         {/* Explore Gallery Button Below Carousel */}
         <div className="mt-10 sm:mt-12 text-center">
-          <button className="group relative inline-flex items-center gap-3 bg-[#C3195D] hover:bg-[#F70776] text-white pl-7 pr-2.5 py-3 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(195,25,93,0.4)] hover:shadow-[0_0_30px_rgba(247,7,118,0.7)] transform hover:-translate-y-0.5">
+          <button
+            onClick={handleExploreFullGallery}
+            className="group relative inline-flex items-center gap-3 bg-[#C3195D] hover:bg-[#F70776] text-white pl-7 pr-2.5 py-3 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(195,25,93,0.4)] hover:shadow-[0_0_30px_rgba(247,7,118,0.7)] transform hover:-translate-y-0.5 cursor-pointer"
+          >
             <span>Explore Full Gallery</span>
             <span className="w-8 h-8 rounded-full bg-[#141010] text-[#FAF6F6] flex items-center justify-center group-hover:bg-white group-hover:text-[#F70776] transition-all duration-300">
               <svg
@@ -216,3 +256,4 @@ export default function VideoGallerySection() {
     </section>
   );
 }
+

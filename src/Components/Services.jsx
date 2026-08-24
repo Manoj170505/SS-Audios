@@ -1,168 +1,230 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ss-audios-backend-production.up.railway.app/api';
+
+const DEFAULT_SERVICES = [
+    {
+        id: 1,
+        title: "Wedding Events",
+        price: "₹25,000",
+        category: "Grand Celebrations",
+        tag: "Tour-Grade Audio",
+        description:
+            "Unforgettable Wedding Audio & Staging. Tour-grade sound systems, precision acoustic tuning, and ambient staging tailored to make every vow and song crystal clear.",
+        image:
+            "https://images.unsplash.com/photo-1597157639073-69284dc0fdaf?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        features: ["Precision Acoustic Tuning", "Tour-Grade Wireless Sound", "Ambient Staging & Lighting"],
+    },
+    {
+        id: 2,
+        title: "Goldstar Orchestra",
+        price: "₹25,000",
+        category: "Live Orchestration",
+        tag: "Multi-Genre",
+        description:
+            "Crafted live orchestral arrangements, high-energy beatmatching, and versatile multi-genre music curation designed to keep your celebration vibrant and unforgettable.",
+        image:
+            "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=600",
+        features: ["Live String & Brass Ensemble", "Multi-Genre Song Curation", "Dynamic Live Beatmatching"],
+    },
+    {
+        id: 3,
+        title: "Lighting & Audio",
+        price: "₹40,000",
+        category: "Atmospheric FX",
+        tag: "Intelligent Lighting",
+        description:
+            "Intelligent Lighting & Crystal-Clear Sound. Dynamic moving heads, laser shows, and synchronized strobes paired with high-fidelity audio engineering and low-fog atmospheric effects.",
+        image:
+            "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=600",
+        features: ["Moving Head Lasers & Strobes", "Synchronized FX & Low-Fog", "Hi-Fi Audio Engineering"],
+    },
+    {
+        id: 4,
+        title: "Welcome Dance",
+        price: "₹15,000",
+        category: "Stage Choreography",
+        tag: "Opening Act",
+        description:
+            "Vibrant Welcome Dance Performance. Electrifying choreography, custom entrance tracks, and synchronized stage pyrotechnics designed to set an unforgettable opening tone for your guests.",
+        image:
+            "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=600",
+        features: ["Custom Entrance Tracks", "Synchronized Stage Pyros", "Electrifying Choreography"],
+    },
+    {
+        id: 5,
+        title: "DJ Events",
+        price: "Starting from ₹15,000",
+        category: "Club & Festival",
+        tag: "Live Stem Remixing",
+        description:
+            "Electrifying DJ Events & Festival Beats. Festival-grade audio systems, seamless live stem mixing, and real-time visual synchronization designed to keep your dance floor packed all night.",
+        image:
+            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=600",
+        features: ["Real-Time Stem Mixing", "Festival-Grade Sound Array", "Synchronized Visuals"],
+    },
+    {
+        id: 6,
+        title: "Instrumentals",
+        price: "₹10,000",
+        category: "Acoustic Solo & Band",
+        tag: "Soulful Live",
+        description:
+            "Mesmerizing Instrumental Performances. Soulful live solos and ensemble arrangements spanning violin, flute, saxophone, and classical instruments for an elegant, immersive ambiance.",
+        image:
+            "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=600",
+        features: ["Violin, Sax & Flute Solos", "Ensemble Arrangements", "Immersive Classical Ambiance"],
+    },
+];
+
+const DEFAULT_PLANS = [
+    {
+        id: "starter",
+        name: "Starter",
+        badge: "Solo Creators",
+        desc: "Essential DJ set for private home parties and intimate gatherings.",
+        monthlyPrice: "$199",
+        yearlyPrice: "$159",
+        period: "/ event",
+        buttonText: "Get Starter",
+        theme: "standard",
+        features: [
+            { text: "3 Hours Live DJ Set", included: true },
+            { text: "Basic Sound System (1,000W)", included: true },
+            { text: "Standard Playlist Customization", included: true },
+            { text: "Dynamic Stage Lighting & FX", included: false },
+            { text: "Dedicated Sound Engineer", included: false },
+            { text: "Wireless Mic & MC Host", included: false },
+            { text: "Custom 3D Visual Projection", included: false },
+        ],
+    },
+    {
+        id: "basic",
+        name: "Basic",
+        badge: "Club Nights",
+        desc: "Ideal for medium lounge venues, birthdays, and rooftop parties.",
+        monthlyPrice: "$399",
+        yearlyPrice: "$319",
+        period: "/ event",
+        buttonText: "Choose Basic",
+        theme: "standard",
+        features: [
+            { text: "5 Hours Live DJ Set", included: true },
+            { text: "Pro Sound System (3,000W)", included: true },
+            { text: "Standard Playlist Customization", included: true },
+            { text: "Dynamic Stage Lighting & FX", included: true },
+            { text: "Dedicated Sound Engineer", included: false },
+            { text: "Wireless Mic & MC Host", included: false },
+            { text: "Custom 3D Visual Projection", included: false },
+        ],
+    },
+    {
+        id: "standard",
+        name: "Standard",
+        badge: "Corporate Events",
+        desc: "Complete audio-visual setup for corporate events and weddings.",
+        monthlyPrice: "$699",
+        yearlyPrice: "$559",
+        period: "/ event",
+        buttonText: "Select Standard",
+        theme: "standard",
+        features: [
+            { text: "7 Hours Live DJ Performance", included: true },
+            { text: "High-Impact Concert Sound (5,000W)", included: true },
+            { text: "Custom Playlist & Track Edits", included: true },
+            { text: "Dynamic Stage Lighting & FX", included: true },
+            { text: "Dedicated Sound Engineer", included: true },
+            { text: "Wireless Mic & MC Host", included: true },
+            { text: "Custom 3D Visual Projection", included: false },
+        ],
+    },
+    {
+        id: "premium",
+        name: "Premium",
+        badge: "MOST POPULAR",
+        desc: "Full-scale concert production with silver-grade audio and staging.",
+        monthlyPrice: "$1,299",
+        yearlyPrice: "$1,039",
+        period: "/ event",
+        buttonText: "Upgrade to Premium",
+        theme: "silver",
+        features: [
+            { text: "Full Night Live DJ Set (Up to 10h)", included: true },
+            { text: "Tour-Grade Array Sound (10,000W)", included: true },
+            { text: "Custom Playlist & Track Edits", included: true },
+            { text: "Full Moving-Head Light Show & Fog", included: true },
+            { text: "2x Sound & Lighting Engineers", included: true },
+            { text: "Dual Wireless Mics & Pro MC", included: true },
+            { text: "Custom 3D Visual Projection", included: true },
+        ],
+    },
+    {
+        id: "elite",
+        name: "Elite",
+        badge: "VIP / FESTIVAL",
+        desc: "Ultimate festival experience with top-tier gold stage production.",
+        monthlyPrice: "$2,499",
+        yearlyPrice: "$1,999",
+        period: "/ event",
+        buttonText: "Book Elite VIP",
+        theme: "gold",
+        features: [
+            { text: "Unlimited Performance Duration", included: true },
+            { text: "Ultra Concert Sound System (25,000W+)", included: true },
+            { text: "Exclusive Original Live Remixes & Stems", included: true },
+            { text: "Full Laser Show, CO2 Jets & Pyros", included: true },
+            { text: "Full Backstage Audio Crew & Director", included: true },
+            { text: "Multi-Wireless System & Celebrity MC", included: true },
+            { text: "Custom 3D Video Mapping & LED Wall", included: true },
+        ],
+    },
+];
+
 export default function Services() {
+    const [services, setServices] = useState(DEFAULT_SERVICES);
+    const [plans, setPlans] = useState(DEFAULT_PLANS);
     const [selectedServiceId, setSelectedServiceId] = useState(1);
-
-    const services = [
-        {
-            id: 1,
-            title: "Wedding Events",
-            price: "₹25,000",
-            description:
-                "High-end audio engineering with custom acoustic calibration, subwoofers, and crystal-clear sound staging.",
-            image:
-                "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=600",
-        },
-        {
-            id: 2,
-            title: "Club & Event DJing",
-            price: "$600 / night",
-            description:
-                "Seamless live beatmatching, crowd reading, and high-energy multi-genre music curation for all nightlife venues.",
-            image:
-                "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=600",
-        },
-        {
-            id: 3,
-            title: "Lighting & Stage FX",
-            price: "$350 / show",
-            description:
-                "Intelligent moving heads, laser light shows, synchronized strobe sequences, and low-lying fog atmospheric FX.",
-            image:
-                "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=600",
-        },
-        {
-            id: 4,
-            title: "Audio Production",
-            price: "$250 / track",
-            description:
-                "Professional multi-track mixing, studio vocal tuning, stem mastering, and custom intro/outro DJ edits.",
-            image:
-                "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=600",
-        },
-        {
-            id: 5,
-            title: "Live Mixing & Tuning",
-            price: "$300 / session",
-            description:
-                "Real-time equalizer balancing, dynamic range compression, and feedback suppression for active stage performances.",
-            image:
-                "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=600",
-        },
-        {
-            id: 6,
-            title: "Visual Projection",
-            price: "$400 / setup",
-            description:
-                "Dynamic 3D video mapping, LED wall visuals, custom graphic displays, and real-time audio-reactive projections.",
-            image:
-                "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=600",
-        },
-    ];
-
-    const activeService =
-        services.find((s) => s.id === selectedServiceId) || services[0];
-
     const [billingCycle, setBillingCycle] = useState("monthly"); // 'monthly' | 'yearly'
     const [activeTab, setActiveTab] = useState("individual"); // 'individual' | 'teams'
 
-    const plans = [
-        {
-            name: "Starter",
-            badge: "Solo Creators",
-            desc: "Essential DJ set for private home parties and intimate gatherings.",
-            price: billingCycle === "monthly" ? "$199" : "$159",
-            period: "/ event",
-            buttonText: "Get Starter",
-            theme: "standard",
-            features: [
-                { text: "3 Hours Live DJ Set", included: true },
-                { text: "Basic Sound System (1,000W)", included: true },
-                { text: "Standard Playlist Customization", included: true },
-                { text: "Dynamic Stage Lighting & FX", included: false },
-                { text: "Dedicated Sound Engineer", included: false },
-                { text: "Wireless Mic & MC Host", included: false },
-                { text: "Custom 3D Visual Projection", included: false },
-            ],
-        },
-        {
-            name: "Basic",
-            badge: "Club Nights",
-            desc: "Ideal for medium lounge venues, birthdays, and rooftop parties.",
-            price: billingCycle === "monthly" ? "$399" : "$319",
-            period: "/ event",
-            buttonText: "Choose Basic",
-            theme: "standard",
-            features: [
-                { text: "5 Hours Live DJ Set", included: true },
-                { text: "Pro Sound System (3,000W)", included: true },
-                { text: "Standard Playlist Customization", included: true },
-                { text: "Dynamic Stage Lighting & FX", included: true },
-                { text: "Dedicated Sound Engineer", included: false },
-                { text: "Wireless Mic & MC Host", included: false },
-                { text: "Custom 3D Visual Projection", included: false },
-            ],
-        },
-        {
-            name: "Standard",
-            badge: "Corporate Events",
-            desc: "Complete audio-visual setup for corporate events and weddings.",
-            price: billingCycle === "monthly" ? "$699" : "$559",
-            period: "/ event",
-            buttonText: "Select Standard",
-            theme: "standard",
-            features: [
-                { text: "7 Hours Live DJ Performance", included: true },
-                { text: "High-Impact Concert Sound (5,000W)", included: true },
-                { text: "Custom Playlist & Track Edits", included: true },
-                { text: "Dynamic Stage Lighting & FX", included: true },
-                { text: "Dedicated Sound Engineer", included: true },
-                { text: "Wireless Mic & MC Host", included: true },
-                { text: "Custom 3D Visual Projection", included: false },
-            ],
-        },
-        {
-            name: "Premium",
-            badge: "MOST POPULAR",
-            desc: "Full-scale concert production with silver-grade audio and staging.",
-            price: billingCycle === "monthly" ? "$1,299" : "$1,039",
-            period: "/ event",
-            buttonText: "Upgrade to Premium",
-            theme: "silver",
-            features: [
-                { text: "Full Night Live DJ Set (Up to 10h)", included: true },
-                { text: "Tour-Grade Array Sound (10,000W)", included: true },
-                { text: "Custom Playlist & Track Edits", included: true },
-                { text: "Full Moving-Head Light Show & Fog", included: true },
-                { text: "2x Sound & Lighting Engineers", included: true },
-                { text: "Dual Wireless Mics & Pro MC", included: true },
-                { text: "Custom 3D Visual Projection", included: true },
-            ],
-        },
-        {
-            name: "Elite",
-            badge: "VIP / FESTIVAL",
-            desc: "Ultimate festival experience with top-tier gold stage production.",
-            price: billingCycle === "monthly" ? "$2,499" : "$1,999",
-            period: "/ event",
-            buttonText: "Book Elite VIP",
-            theme: "gold",
-            features: [
-                { text: "Unlimited Performance Duration", included: true },
-                { text: "Ultra Concert Sound System (25,000W+)", included: true },
-                { text: "Exclusive Original Live Remixes & Stems", included: true },
-                { text: "Full Laser Show, CO2 Jets & Pyros", included: true },
-                { text: "Full Backstage Audio Crew & Director", included: true },
-                { text: "Multi-Wireless System & Celebrity MC", included: true },
-                { text: "Custom 3D Video Mapping & LED Wall", included: true },
-            ],
-        },
-    ];
+    useEffect(() => {
+        // Fetch Live Services
+        fetch(`${API_BASE_URL}/services`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    setServices(data.data);
+                }
+            })
+            .catch(err => console.log('Using default services (offline or loading)'));
+
+        // Fetch Live Plans
+        fetch(`${API_BASE_URL}/plans`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                    setPlans(data.data);
+                }
+            })
+            .catch(err => console.log('Using default plans (offline or loading)'));
+    }, []);
+
+    const handleServiceToggle = (id) => {
+        setSelectedServiceId((prev) => (prev === id ? null : id));
+    };
+
+    const handleBookService = (service) => {
+        const el = document.getElementById("contacts") || document.getElementById("contact");
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
 
     return (
-        <div>
-            <section className="bg-[#141010] text-[#FAF6F6] min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
+        <div id="services">
+            <section className="bg-[#141010] text-[#FAF6F6] min-h-screen py-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans">
                 {/* Pulse glow animation for CTA button */}
                 <style>{`
         @keyframes pulseGlow {
@@ -174,152 +236,129 @@ export default function Services() {
         }
       `}</style>
 
-                <div className="max-w-7xl w-full mx-auto bg-[#1C1717] border border-[#2B2323] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl">
+                <div className="max-w-7xl w-full mx-auto bg-[#1C1717] border border-[#2B2323] rounded-3xl p-5 sm:p-8 lg:p-10 shadow-2xl">
                     {/* Header Area */}
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8 sm:mb-10">
                         <div className="space-y-3 max-w-xl">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#2B2323] bg-[#141010]/60 text-xs font-semibold uppercase tracking-wider text-[#A69B9B]">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#F70776]" />
-                                Our Services
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#2B2323] bg-[#141010]/80 text-xs font-semibold uppercase tracking-wider text-[#A69B9B]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#F70776] animate-pulse" />
+                                Our Signature Services
                             </div>
 
-                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-[#FAF6F6] leading-tight">
+                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-[#FAF6F6] leading-tight">
                                 What we can do <br />
-                                <span className="text-[#F70776]">for you</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F70776] via-[#C3195D] to-[#F70776]">for your event</span>
                             </h2>
                         </div>
 
-                        <div className="flex flex-col items-start lg:items-end gap-5 max-w-md">
-                            <p className="text-[#BDB2B2] text-sm sm:text-base leading-relaxed lg:text-right font-light">
-                                Tap any service card to reveal pricing and detailed
-                                capabilities.
+                        <div className="flex flex-col items-start lg:items-end gap-3 max-w-md">
+                            <p className="text-[#BDB2B2] text-xs sm:text-sm leading-relaxed lg:text-right font-light">
+                                Select any service to explore integrated rates, stage features, and instant booking options.
                             </p>
-
-                            <button className="btn-animated group relative inline-flex items-center gap-3 bg-[#C3195D] hover:bg-[#F70776] text-white pl-6 pr-2 py-2 rounded-full font-medium text-sm transition-all duration-300 transform hover:-translate-y-0.5">
-                                <span>See our services</span>
-                                <span className="w-8 h-8 rounded-full bg-[#141010] text-[#FAF6F6] flex items-center justify-center group-hover:bg-white group-hover:text-[#F70776] transition-all duration-300">
-                                    <svg
-                                        className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2.5"
-                                            d="M7 17L17 7M17 7H7M17 7V17"
-                                        />
-                                    </svg>
-                                </span>
-                            </button>
+                            <span className="text-[11px] text-[#F70776] font-semibold uppercase tracking-wider bg-[#F70776]/10 px-3 py-1 rounded-full border border-[#F70776]/20">
+                                Tap card to expand rates & booking
+                            </span>
                         </div>
                     </div>
 
-                    {/* 6 Services Grid Layout (6 columns on lg, 3 on md, 2 on sm, 1 on mobile) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    {/* Integrated 6 Services Responsive Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                         {services.map((service) => {
                             const isSelected = service.id === selectedServiceId;
                             return (
                                 <div
                                     key={service.id}
-                                    onClick={() => setSelectedServiceId(service.id)}
-                                    className={`group relative h-64 sm:h-72 lg:h-[320px] rounded-2xl overflow-hidden border cursor-pointer transition-all duration-300 transform ${isSelected
-                                        ? "border-[#F70776] ring-2 ring-[#F70776]/50 scale-[1.02] shadow-[0_0_20px_rgba(247,7,118,0.3)]"
-                                        : "border-[#2B2323] hover:border-[#C3195D] hover:-translate-y-1"
-                                        } bg-[#141010]`}
+                                    onClick={() => handleServiceToggle(service.id)}
+                                    className={`group relative rounded-3xl overflow-hidden border cursor-pointer transition-all duration-500 bg-[#141010] flex flex-col justify-between ${
+                                        isSelected
+                                            ? "border-[#F70776] ring-2 ring-[#F70776]/50 shadow-[0_0_30px_rgba(247,7,118,0.25)] scale-[1.01]"
+                                            : "border-[#2B2323] hover:border-[#C3195D]/80 hover:shadow-lg hover:-translate-y-1"
+                                    }`}
                                 >
-                                    {/* Image */}
-                                    <img
-                                        src={service.image}
-                                        alt={service.title}
-                                        className={`w-full h-full object-cover transition-transform duration-700 ${isSelected
-                                            ? "scale-110 filter brightness-90"
-                                            : "filter brightness-65 contrast-110 group-hover:scale-105"
+                                    {/* Media Thumbnail & Badges Container */}
+                                    <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+                                        <img
+                                            src={service.image}
+                                            alt={service.title}
+                                            className={`w-full h-full object-cover transition-transform duration-700 ${
+                                                isSelected
+                                                    ? "scale-105 filter brightness-95"
+                                                    : "filter brightness-80 contrast-110 group-hover:scale-105"
                                             }`}
-                                    />
+                                        />
 
-                                    {/* Dark Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/40 to-transparent opacity-90" />
+                                        {/* Gradient Overlay for Text Legibility */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/50 to-transparent opacity-95" />
 
-                                    {/* Selection Highlight Badge / Icon */}
-                                    <div
-                                        className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${isSelected
-                                            ? "bg-[#F70776] text-white scale-110 shadow-lg"
-                                            : "bg-[#141010]/60 backdrop-blur-md border border-white/10 text-white/70 group-hover:bg-[#C3195D] group-hover:text-white"
-                                            }`}
-                                    >
-                                        <svg
-                                            className={`w-3.5 h-3.5 transition-transform duration-300 ${isSelected ? "rotate-180" : ""}`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2.5"
-                                                d="M19 9l-7 7-7-7"
-                                            />
-                                        </svg>
+                                        {/* Top Badges: Category & Price Badge Integrated */}
+                                        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
+                                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#141010]/85 backdrop-blur-md border border-white/10 text-white shadow-md">
+                                                0{service.id} • {service.tag}
+                                            </span>
+
+                                            {/* Integrated Price Pill Badge */}
+                                            <div className="px-3 py-1 rounded-full bg-[#F70776] text-white text-xs sm:text-sm font-black tracking-wide shadow-[0_0_15px_rgba(247,7,118,0.6)] flex items-center gap-1">
+                                                <span>{service.price}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Service Title on Card Header */}
+                                        <div className="absolute bottom-3 left-4 right-4 z-10">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#F70776] block mb-0.5">
+                                                {service.category}
+                                            </span>
+                                            <h3 className="text-lg sm:text-xl font-black text-white tracking-tight leading-snug">
+                                                {service.title}
+                                            </h3>
+                                        </div>
                                     </div>
 
-                                    {/* Service Card Title */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                                        <span
-                                            className={`text-[10px] font-bold uppercase tracking-wider block mb-1 ${isSelected ? "text-[#F70776]" : "text-[#A69B9B]"}`}
-                                        >
-                                            Service 0{service.id}
-                                        </span>
-                                        <h3
-                                            className={`text-sm font-bold leading-tight transition-colors duration-300 ${isSelected ? "text-white" : "text-[#FAF6F6]"}`}
-                                        >
-                                            {service.title}
-                                        </h3>
+                                    {/* Card Body: Description & Details */}
+                                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+                                        <p className="text-xs sm:text-sm text-[#D4CCCC] font-light leading-relaxed">
+                                            {service.description}
+                                        </p>
+
+                                        {/* Feature Highlights Pills */}
+                                        <div className="space-y-1.5 pt-2 border-t border-[#2B2323]">
+                                            {service.features.map((feat, fIdx) => (
+                                                <div key={fIdx} className="flex items-center gap-2 text-xs text-[#BDB2B2]">
+                                                    <span className="w-4 h-4 rounded-full bg-[#F70776]/20 text-[#F70776] flex items-center justify-center shrink-0 text-[10px] font-bold">
+                                                        ✓
+                                                    </span>
+                                                    <span className="font-medium text-neutral-300">{feat}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Integrated Animated Price & Booking Drawer */}
+                                        <div className="pt-3 border-t border-[#2B2323]/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] uppercase tracking-wider text-[#A69B9B]">
+                                                    Starting Rate
+                                                </span>
+                                                <span className="text-lg sm:text-xl font-extrabold text-[#F70776]">
+                                                    {service.price}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleBookService(service);
+                                                }}
+                                                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-[#C3195D] hover:bg-[#F70776] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-[0_0_15px_rgba(195,25,93,0.4)] hover:shadow-[0_0_20px_rgba(247,7,118,0.7)] flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
+                                            >
+                                                <span>Book This</span>
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );
                         })}
-                    </div>
-
-                    {/* Selected Service Dropdown Detail Box */}
-                    <div className="mt-6 bg-[#141010] border border-[#F70776]/40 rounded-2xl p-6 sm:p-8 transition-all duration-500 shadow-xl relative overflow-hidden">
-                        {/* Subtle Pink Ambient Glow */}
-                        <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-[#F70776]/10 rounded-full blur-3xl pointer-events-none" />
-
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-                            <div className="space-y-2 max-w-2xl">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-[#C3195D]/20 text-[#F70776] border border-[#C3195D]/40 uppercase tracking-widest">
-                                        Selected Service
-                                    </span>
-                                    <span className="text-xs text-[#A69B9B]">
-                                        0{activeService.id} / 06
-                                    </span>
-                                </div>
-                                <h4 className="text-2xl sm:text-3xl font-black text-[#FAF6F6] uppercase tracking-tight">
-                                    {activeService.title}
-                                </h4>
-                                <p className="text-[#BDB2B2] text-sm sm:text-base leading-relaxed font-light">
-                                    {activeService.description}
-                                </p>
-                            </div>
-
-                            {/* Price Tag & Action */}
-                            <div className="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-[#2B2323]">
-                                <div className="text-left md:text-right">
-                                    <span className="text-xs text-[#A69B9B] uppercase tracking-wider block">
-                                        Estimated Rate
-                                    </span>
-                                    <span className="text-2xl sm:text-3xl font-extrabold text-[#F70776]">
-                                        {activeService.price}
-                                    </span>
-                                </div>
-                                <button className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#C3195D] hover:bg-[#F70776] text-white text-xs font-semibold uppercase tracking-wider transition-colors duration-300">
-                                    Book This Service
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -420,7 +459,7 @@ export default function Services() {
                                 </div>
                                 <div>
                                     <span className="block text-2xl sm:text-4xl font-black text-[#FAF6F6]">
-                                        12+
+                                        25+
                                     </span>
                                     <span className="text-xs text-[#A69B9B] uppercase tracking-wider font-medium">
                                         Years Experience
@@ -539,8 +578,8 @@ export default function Services() {
                         </div>
                     </div>
 
-                    {/* 5 Plans Grid Layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5 items-stretch">
+                    {/* Plans Grid Layout - Responsive 1 to 5 columns */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-5 items-stretch">
                         {plans.map((plan, idx) => {
                             const isSilver = plan.theme === "silver";
                             const isGold = plan.theme === "gold";
@@ -595,16 +634,20 @@ export default function Services() {
                                                         : "text-[#FAF6F6]"
                                                     }`}
                                             >
-                                                {plan.price}
+                                                {billingCycle === "monthly" ? (plan.monthlyPrice || plan.price) : (plan.yearlyPrice || plan.price)}
                                             </span>
                                             <span className="text-xs text-[#A69B9B]">
-                                                {plan.period}
+                                                {plan.period || "/ event"}
                                             </span>
                                         </div>
 
                                         {/* Action CTA Button */}
                                         <button
-                                            className={`w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md mb-8 ${isSilver
+                                            onClick={() => {
+                                                const el = document.getElementById("contacts") || document.getElementById("contact");
+                                                if (el) el.scrollIntoView({ behavior: "smooth" });
+                                            }}
+                                            className={`w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md mb-8 cursor-pointer ${isSilver
                                                 ? "bg-gradient-to-r from-slate-100 via-slate-300 to-slate-200 hover:from-white hover:to-slate-100 text-black font-black shadow-[0_0_20px_rgba(226,232,240,0.4)]"
                                                 : isGold
                                                     ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-black shadow-[0_0_20px_rgba(234,179,8,0.4)]"

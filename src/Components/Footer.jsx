@@ -1,11 +1,15 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Footer() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const navLinks = [
-        { name: 'Experience', href: '#experience' },
-        { name: 'Services', href: '#services' },
-        { name: 'Gallery', href: '#gallery' },
-        { name: 'Contact Us', href: '#contacts' },
+        { name: 'Experience', target: 'experience', type: 'scroll' },
+        { name: 'Services', target: 'services', type: 'scroll' },
+        { name: 'Gallery', target: '/gallery', type: 'route' },
+        { name: 'Contact Us', target: 'contacts', type: 'scroll' },
     ];
 
     const socialLinks = [
@@ -14,6 +18,39 @@ export default function Footer() {
         { name: 'X / Twitter', icon: 'X', href: '#' },
         { name: 'YouTube', icon: 'YT', href: '#' },
     ];
+
+    const handleNavClick = (link) => {
+        if (link.type === 'route') {
+            navigate(link.target);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            if (location.pathname !== '/') {
+                navigate('/');
+                setTimeout(() => {
+                    const el = document.getElementById(link.target);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }, 100);
+            } else {
+                const el = document.getElementById(link.target);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                } else if (link.target === 'experience') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        }
+    };
+
+    const handleBrandClick = () => {
+        if (location.pathname !== '/') {
+            navigate('/');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     return (
         <footer className="bg-[#141010] text-white py-12 px-4 sm:px-6 lg:px-8 border-t border-[#2B2323] font-sans relative overflow-hidden">
@@ -27,7 +64,10 @@ export default function Footer() {
                 <div className="bg-[#1C1717] border border-[#2B2323] rounded-3xl p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-8 shadow-2xl">
 
                     {/* Logo & Brand Name */}
-                    <div className="flex items-center gap-3 cursor-pointer group">
+                    <div
+                        onClick={handleBrandClick}
+                        className="flex items-center gap-3 cursor-pointer group"
+                    >
                         <div className="w-9 h-9 rounded-full bg-[#f70776] flex items-center justify-between px-2 py-2.5 transition-transform duration-300 group-hover:scale-105 shadow-[0_0_15px_rgba(247,7,118,0.5)]">
                             <span className="w-1.5 h-1.5 bg-[#141010] rounded-full" />
                             <span className="w-1.5 h-1.5 bg-[#141010] rounded-full" />
@@ -40,13 +80,13 @@ export default function Footer() {
                     {/* Navigation Links */}
                     <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
                         {navLinks.map((link) => (
-                            <a
+                            <button
                                 key={link.name}
-                                href={link.href}
-                                className="text-xs uppercase tracking-widest font-semibold text-[#A69B9B] hover:text-[#f70776] transition-colors"
+                                onClick={() => handleNavClick(link)}
+                                className="text-xs uppercase tracking-widest font-semibold text-[#A69B9B] hover:text-[#f70776] transition-colors cursor-pointer"
                             >
                                 {link.name}
-                            </a>
+                            </button>
                         ))}
                     </nav>
 
@@ -70,16 +110,16 @@ export default function Footer() {
                 <div className="bg-[#1C1717] border border-[#2B2323] rounded-2xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#A69B9B]">
                     <p>© {new Date().getFullYear()} SS AUDIOS. All rights reserved.</p>
                     <div className="flex items-center gap-6">
-                        <a href="#privacy" className="hover:text-white transition-colors">
+                        <span className="text-neutral-500 hover:text-white transition-colors cursor-pointer">
                             Privacy Policy
-                        </a>
-                        <a href="#terms" className="hover:text-white transition-colors">
+                        </span>
+                        <span className="text-neutral-500 hover:text-white transition-colors cursor-pointer">
                             Terms of Service
-                        </a>
+                        </span>
                     </div>
                 </div>
 
             </div>
         </footer>
     );
-}
+}

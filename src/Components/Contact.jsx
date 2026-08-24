@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://ss-audios-backend-production.up.railway.app/api";
+
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -9,6 +11,10 @@ export default function ContactUsPage() {
     services: [],
     message: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+  const [statusMessage, setStatusMessage] = useState("");
 
   const availableServices = [
     "Live DJ Set",
@@ -31,14 +37,47 @@ export default function ContactUsPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    alert("Thank you! Your booking request has been sent.");
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setStatusMessage("");
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to send booking inquiry.");
+      }
+
+      setSubmitStatus("success");
+      setStatusMessage("Thank you! Your booking request has been delivered to our team.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        eventType: "Private Party",
+        services: [],
+        message: "",
+      });
+    } catch (err) {
+      console.error("Submission error:", err);
+      setSubmitStatus("error");
+      setStatusMessage(err.message || "Network error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+
   return (
-    <div className="bg-[#141010] text-[#FAF6F6] min-h-screen font-sans selection:bg-[#F70776] selection:text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div id="contacts" className="bg-[#141010] text-[#FAF6F6] min-h-screen font-sans selection:bg-[#F70776] selection:text-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* ========================================================= */}
         {/* MAIN CONTACT FORM & INFO SECTION                          */}
@@ -217,15 +256,40 @@ export default function ContactUsPage() {
                 />
               </div>
 
+              {/* Status Alert Banner */}
+              {submitStatus === "success" && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-xs flex items-center gap-3">
+                  <span className="text-lg">🎉</span>
+                  <span>{statusMessage}</span>
+                </div>
+              )}
+
+              {submitStatus === "error" && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-center gap-3">
+                  <span className="text-lg">⚠️</span>
+                  <span>{statusMessage}</span>
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#C3195D] via-[#F70776] to-[#C3195D] hover:opacity-95 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(247,7,118,0.3)] flex items-center justify-center gap-2 group cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-[#C3195D] via-[#F70776] to-[#C3195D] hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(247,7,118,0.3)] flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <span>Submit Booking Request</span>
-                <span className="transform group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Transmitting Request...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Booking Request</span>
+                    <span className="transform group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
+                  </>
+                )}
               </button>
             </form>
           </div>
@@ -234,3 +298,4 @@ export default function ContactUsPage() {
     </div>
   );
 }
+

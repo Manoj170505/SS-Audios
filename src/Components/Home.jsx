@@ -1,13 +1,35 @@
-import React, { useState } from "react";
-import Navbar from "./Navbar";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import SoundscapeBackground from "./Elements/SoundscapeBackground";
 
 export default function Homepage() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleContactClick = () => {
+        const el = document.getElementById("contacts") || document.getElementById("contact");
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
+    const handleGalleryClick = () => {
+        navigate("/gallery");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
-        <div className="bg-[#141010] min-h-screen flex flex-col text-[#F3ECEC] overflow-x-hidden">
-            <Navbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+        <section id="experience" className="relative bg-[#141010] min-h-screen flex flex-col text-[#F3ECEC] overflow-x-hidden pt-24">
+
+            {/* Dynamic Soundscape Animated Audio Waves & Equalizer Background */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-auto">
+                <SoundscapeBackground variant="hero" waveCount={4} particleCount={55} speed={1} interactive={true} />
+            </div>
+
+            {/* Ambient vignette and glow overlay */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#141010] via-transparent to-[#141010]/70 pointer-events-none" />
+            <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#F70776]/10 rounded-full blur-[140px] pointer-events-none" />
+
 
             <main className="w-full max-w-7xl mx-auto px-6 py-6 md:py-12 flex flex-col lg:flex-row items-center justify-between gap-8 flex-grow">
                 {/* Left Content Column */}
@@ -42,10 +64,16 @@ export default function Homepage() {
 
                     {/* CTA Element Array */}
                     <div className="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
-                        <button className="w-full sm:w-auto bg-[#C3195D] hover:bg-[#a6134e] text-white px-8 py-3.5 rounded-full font-medium tracking-wide text-sm transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_20px_rgba(195,25,93,0.3)]">
+                        <button
+                            onClick={handleContactClick}
+                            className="w-full sm:w-auto bg-[#C3195D] hover:bg-[#a6134e] text-white px-8 py-3.5 rounded-full font-medium tracking-wide text-sm transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_4px_20px_rgba(195,25,93,0.3)] cursor-pointer"
+                        >
                             Contact me
                         </button>
-                        <button className="w-full sm:w-auto border border-[#2B2323] hover:border-[#C3195D] hover:text-[#C3195D] text-[#FAF6F6] px-8 py-3.5 rounded-full font-medium tracking-wide text-sm transition-all duration-300 flex items-center justify-center gap-2 bg-[#1D1717]/50 group">
+                        <button
+                            onClick={handleGalleryClick}
+                            className="w-full sm:w-auto border border-[#2B2323] hover:border-[#C3195D] hover:text-[#C3195D] text-[#FAF6F6] px-8 py-3.5 rounded-full font-medium tracking-wide text-sm transition-all duration-300 flex items-center justify-center gap-2 bg-[#1D1717]/50 group cursor-pointer"
+                        >
                             <svg
                                 className="w-4 h-4 text-[#A69B9B] group-hover:text-[#C3195D] transition-colors"
                                 fill="currentColor"
@@ -77,7 +105,10 @@ export default function Homepage() {
 
                         {/* Circular Video Badge Overlay Components */}
                         <div className="absolute top-5 left-5 z-20 hidden sm:block">
-                            <div className="relative w-16 h-16 flex items-center justify-center cursor-pointer group/badge">
+                            <div
+                                onClick={handleGalleryClick}
+                                className="relative w-16 h-16 flex items-center justify-center cursor-pointer group/badge"
+                            >
                                 <svg
                                     className="absolute inset-0 w-full h-full animate-[spin_12s_linear_infinite]"
                                     viewBox="0 0 100 100"
@@ -106,6 +137,6 @@ export default function Homepage() {
                     </div>
                 </div>
             </main>
-        </div>
+        </section>
     );
 }
