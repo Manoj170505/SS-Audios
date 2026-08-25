@@ -12,7 +12,7 @@ export default function ContactUsPage() {
     fullName: "",
     email: "",
     phone: "",
-    eventType: "Private Party",
+    eventType: "Wedding Celebration",
     services: [],
     message: "",
   });
@@ -22,12 +22,13 @@ export default function ContactUsPage() {
   const [statusMessage, setStatusMessage] = useState("");
 
   const availableServices = [
-    "Live DJ Set",
-    "Sound Setup",
-    "Lighting & FX",
-    "Stage Production",
-    "3D Projection",
-    "MC / Hosting",
+    "Wedding Audio & Staging",
+    "Goldstar Orchestra",
+    "Audios & Lightings",
+    "Corporate & Collages",
+    "Welcome Dance",
+    "DJ Events",
+    "Instrumentals",
   ];
 
   const handleServiceToggle = (service) => {
@@ -122,7 +123,7 @@ export default function ContactUsPage() {
       fullName: "",
       email: "",
       phone: "",
-      eventType: "Private Party",
+      eventType: "Wedding Celebration",
       services: [],
       message: "",
     });
@@ -241,13 +242,15 @@ export default function ContactUsPage() {
                     }
                     className="w-full bg-[#141010] border border-[#2B2323] focus:border-[#F70776] rounded-xl px-4 py-3 text-sm text-[#FAF6F6] outline-none transition-colors"
                   >
-                    <option value="Private Party">
-                      Private Party / Birthday
-                    </option>
-                    <option value="Club Venue">Club & Lounge Venue</option>
-                    <option value="Wedding">Wedding Celebration</option>
-                    <option value="Corporate Event">Corporate Event</option>
-                    <option value="Festival">Festival / Concert</option>
+                    <option value="Wedding Celebration">Wedding Celebration</option>
+                    <option value="Orchestra / Musical Night">Orchestra / Musical Night</option>
+                    <option value="Audios & Stage Lighting Show">Audios & Stage Lighting Show</option>
+                    <option value="Corporate & College Fest">Corporate & College Fest</option>
+                    <option value="Welcome Dance & Cultural Event">Welcome Dance & Cultural Event</option>
+                    <option value="DJ Night & Club Event">DJ Night & Club Event</option>
+                    <option value="Instrumental Concert">Instrumental Concert</option>
+                    <option value="Private Party / Birthday">Private Party / Birthday</option>
+                    <option value="Other Special Event">Other Special Event</option>
                   </select>
                 </div>
               </div>
