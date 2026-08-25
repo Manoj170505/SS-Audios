@@ -161,10 +161,10 @@ export default function ContactUsPage() {
                 Or reach out manually to
               </p>
               <a
-                href="mailto:booking@djservices.com"
+                href="mailto:ssaudios25@gmail.com"
                 className="text-lg sm:text-xl font-bold text-[#F70776] hover:text-[#C3195D] transition-colors inline-block"
               >
-                booking@djservices.com
+                ssaudios25@gmail.com
               </a>
               <div className="text-sm text-[#BDB2B2] space-y-1">
                 <p>Hotline: +1 (800) 555-BEAT</p>
