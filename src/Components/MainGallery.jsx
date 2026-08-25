@@ -5,21 +5,21 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://ss-audios-bac
 
 const DEFAULT_CATEGORIES = [
     "All",
-    "Stage & Lighting",
-    "DJ Events",
+    "Wedding",
     "Orchestra",
-    "Audio Setup",
-    "Weddings",
-    "Ambient",
-    "Club",
-    "Festival"
+    "Audios&Lightings",
+    "Corporate & Collages",
+    "Welcome Dance",
+    "DJ Events",
+    "Instrumentals",
+    "Others"
 ];
 
 const DEFAULT_GALLERY_VIDEOS = [
     {
         id: "demo-1",
         title: "Live Concert Stage & Neon FX",
-        category: "Stage & Lighting",
+        category: "Audios&Lightings",
         type: "video",
         thumbnail: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
         videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
@@ -43,15 +43,15 @@ const DEFAULT_GALLERY_VIDEOS = [
     {
         id: "demo-4",
         title: "Grand Wedding Reception Lighting",
-        category: "Weddings",
+        category: "Wedding",
         type: "video",
         thumbnail: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop",
         videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
     },
     {
         id: "demo-5",
-        title: "Pro Line Array Sound Setup",
-        category: "Audio Setup",
+        title: "Pro Welcome Dance Celebration",
+        category: "Welcome Dance",
         type: "video",
         thumbnail: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=800&auto=format&fit=crop",
         videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
@@ -78,7 +78,7 @@ export default function GallerySection() {
                         return {
                             id: item.id,
                             title: item.title,
-                            category: item.category || "Ambient",
+                            category: item.category || "Wedding",
                             type: item.type || "image",
                             thumbnail: item.type === "image" ? directOrProxyUrl : "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
                             videoUrl: directOrProxyUrl
@@ -86,10 +86,7 @@ export default function GallerySection() {
                     });
 
                     setGalleryVideos(mapped);
-
-                    // Dynamically extract unique categories
-                    const dynamicCats = ["All", ...new Set([...DEFAULT_CATEGORIES.slice(1), ...result.data.map(i => i.category).filter(Boolean)])];
-                    setCategories(dynamicCats);
+                    setCategories(DEFAULT_CATEGORIES);
                 }
             } catch (err) {
                 console.log("Using default gallery data (backend initializing/offline)");
@@ -103,7 +100,9 @@ export default function GallerySection() {
     const filteredVideos =
         selectedCategory === "All"
             ? galleryVideos
-            : galleryVideos.filter((v) => v.category?.toLowerCase() === selectedCategory.toLowerCase());
+            : selectedCategory === "Others"
+                ? galleryVideos.filter((v) => !DEFAULT_CATEGORIES.slice(1, -1).some(c => c.toLowerCase() === (v.category || "").toLowerCase()))
+                : galleryVideos.filter((v) => v.category?.toLowerCase() === selectedCategory.toLowerCase());
 
     const handleNext = () => {
         if (filteredVideos.length === 0) return;

@@ -476,10 +476,10 @@ export default function Services() {
                                         {/* Gradient Overlay for Text Legibility */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/50 to-transparent opacity-95" />
 
-                                        {/* Top Badges: Category & Price Badge Integrated */}
+                                        {/* Top Badges: ID & Price Badge Integrated */}
                                         <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
                                             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#141010]/85 backdrop-blur-md border border-white/10 text-white shadow-md">
-                                                0{service.id} • {service.tag}
+                                                0{service.id}
                                             </span>
 
                                             {/* Integrated Price Pill Badge */}
@@ -490,9 +490,6 @@ export default function Services() {
 
                                         {/* Service Title on Card Header */}
                                         <div className="absolute bottom-3 left-4 right-4 z-10">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#F70776] block mb-0.5">
-                                                {service.category}
-                                            </span>
                                             <h3 className="text-lg sm:text-xl font-black text-white tracking-tight leading-snug">
                                                 {service.title}
                                             </h3>
