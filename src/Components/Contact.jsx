@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://ss-audios-backend-production.up.railway.app/api";
+const getApiBaseUrl = () => {
+  if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    return "http://localhost:5000/api";
+  }
+  return import.meta.env.VITE_API_BASE_URL || "https://ss-audios-backend-production.up.railway.app/api";
+};
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -49,7 +54,7 @@ export default function ContactUsPage() {
     };
 
     // Helper for fetch with timeout
-    const fetchWithTimeout = async (url, options, timeoutMs = 12000) => {
+    const fetchWithTimeout = async (url, options, timeoutMs = 10000) => {
       const controller = new AbortController();
       const timerId = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -63,37 +68,41 @@ export default function ContactUsPage() {
     };
 
     let succeeded = false;
+    const targetUrl = getApiBaseUrl();
 
-    // 1. Try primary API endpoint
+    // 1. Try target endpoint
     try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/contact`, {
+      const res = await fetchWithTimeout(`${targetUrl}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      }, 12000);
+      }, 10000);
 
       const data = await res.json();
       if (res.ok && data.success) {
         succeeded = true;
       }
     } catch (err) {
-      console.warn("Primary contact endpoint notification:", err.message);
+      console.warn("Target contact endpoint notice:", err.message);
     }
 
-    // 2. If primary was slow/unreachable and on localhost, try local dev backend
-    if (!succeeded && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) {
+    // 2. If target failed, try alternate endpoint
+    if (!succeeded) {
+      const alternateUrl = targetUrl.includes("localhost")
+        ? "https://ss-audios-backend-production.up.railway.app/api/contact"
+        : "http://localhost:5000/api/contact";
       try {
-        const localRes = await fetchWithTimeout(`http://localhost:5000/api/contact`, {
+        const altRes = await fetchWithTimeout(alternateUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }, 3000);
-        const localData = await localRes.json();
-        if (localRes.ok && localData.success) {
+        }, 5000);
+        const altData = await altRes.json();
+        if (altRes.ok && altData.success) {
           succeeded = true;
         }
-      } catch (localErr) {
-        console.warn("Local fallback endpoint failed:", localErr.message);
+      } catch (altErr) {
+        console.warn("Alternate contact endpoint notice:", altErr.message);
       }
     }
 
