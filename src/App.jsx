@@ -46,6 +46,18 @@ function GalleryPage() {
 export function App() {
   const [isLoading, setIsLoading] = useState(true);
 
+  // Lock scroll while loader is active to prevent scrollbar jumping
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLoading]);
+
   return (
     <div className="flex flex-col w-full min-h-screen overflow-x-hidden bg-[#141010] text-[#FAF6F6] relative">
       {/* Initial Website Loading Screen */}
@@ -53,10 +65,10 @@ export function App() {
         <InitialLoader onFinish={() => setIsLoading(false)} />
       )}
 
-      {/* Main Website Surface */}
+      {/* Main Website Surface - Pure opacity fade with zero transform scale reflow */}
       <div
-        className={`flex flex-col w-full min-h-screen transition-all duration-700 ${
-          isLoading ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100"
+        className={`flex flex-col w-full min-h-screen transition-opacity duration-700 ${
+          isLoading ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
         <ScrollToTopOnRoute />
