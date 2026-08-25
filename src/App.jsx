@@ -8,6 +8,7 @@ import VideoGallerySection from "./Components/Gallery";
 import ContactUsPage from "./Components/Contact";
 import Footer from "./Components/Footer";
 import GallerySection from "./Components/MainGallery";
+import FloatingWhatsApp from "./Components/Elements/FloatingWhatsApp";
 
 function ScrollToTopOnRoute() {
   const { pathname } = useLocation();
@@ -43,7 +44,7 @@ function GalleryPage() {
 
 export function App() {
   return (
-    <div className="flex flex-col w-full min-h-screen overflow-x-hidden bg-[#141010] text-[#FAF6F6]">
+    <div className="flex flex-col w-full min-h-screen overflow-x-hidden bg-[#141010] text-[#FAF6F6] relative">
       <ScrollToTopOnRoute />
       <Navbar />
       <Routes>
@@ -51,6 +52,7 @@ export function App() {
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
+      <FloatingWhatsApp />
     </div>
   );
 }

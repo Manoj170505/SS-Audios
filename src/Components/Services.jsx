@@ -89,6 +89,11 @@ const DEFAULT_PLANS = [
         period: "/ event",
         buttonText: "Get Starter",
         theme: "standard",
+        videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
+        videos: [
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4"
+        ],
         features: [
             { text: "3 Hours Live DJ Set", included: true },
             { text: "Basic Sound System (1,000W)", included: true },
@@ -109,6 +114,11 @@ const DEFAULT_PLANS = [
         period: "/ event",
         buttonText: "Choose Basic",
         theme: "standard",
+        videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+        videos: [
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4"
+        ],
         features: [
             { text: "5 Hours Live DJ Set", included: true },
             { text: "Pro Sound System (3,000W)", included: true },
@@ -129,6 +139,11 @@ const DEFAULT_PLANS = [
         period: "/ event",
         buttonText: "Select Standard",
         theme: "standard",
+        videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+        videos: [
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4"
+        ],
         features: [
             { text: "7 Hours Live DJ Performance", included: true },
             { text: "High-Impact Concert Sound (5,000W)", included: true },
@@ -149,6 +164,11 @@ const DEFAULT_PLANS = [
         period: "/ event",
         buttonText: "Upgrade to Premium",
         theme: "silver",
+        videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+        videos: [
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4"
+        ],
         features: [
             { text: "Full Night Live DJ Set (Up to 10h)", included: true },
             { text: "Tour-Grade Array Sound (10,000W)", included: true },
@@ -169,6 +189,11 @@ const DEFAULT_PLANS = [
         period: "/ event",
         buttonText: "Book Elite VIP",
         theme: "gold",
+        videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+        videos: [
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4"
+        ],
         features: [
             { text: "Unlimited Performance Duration", included: true },
             { text: "Ultra Concert Sound System (25,000W+)", included: true },
@@ -180,6 +205,134 @@ const DEFAULT_PLANS = [
         ],
     },
 ];
+
+function PlanVideoShowcase({ plan, isSilver, isGold }) {
+    const videoList = Array.isArray(plan.videos) && plan.videos.length > 0
+        ? plan.videos
+        : [plan.videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4"];
+
+    const [currentIdx, setCurrentIdx] = useState(0);
+    const [isMuted, setIsMuted] = useState(true);
+    const videoRef = React.useRef(null);
+
+    // Auto-scroll/cycle across videos if multiple clips exist
+    useEffect(() => {
+        if (videoList.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIdx((prev) => (prev + 1) % videoList.length);
+        }, 7000);
+        return () => clearInterval(interval);
+    }, [videoList.length]);
+
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.muted = isMuted;
+            videoRef.current.play().catch(() => {});
+        }
+    }, [currentIdx, isMuted]);
+
+    const toggleMute = (e) => {
+        e.stopPropagation();
+        if (videoRef.current) {
+            videoRef.current.muted = !isMuted;
+            setIsMuted(!isMuted);
+        }
+    };
+
+    const currentVideo = videoList[currentIdx] || videoList[0];
+
+    return (
+        <div className={`relative w-full h-72 sm:h-80 lg:h-full min-h-[320px] lg:min-h-[400px] rounded-3xl overflow-hidden bg-black/90 border flex flex-col justify-between group shadow-2xl transition-all duration-500 ${
+            isSilver
+                ? "border-slate-300/40"
+                : isGold
+                    ? "border-amber-400/50"
+                    : "border-[#2B2323] group-hover:border-[#F70776]/50"
+        }`}>
+            {/* Auto-playing, Looping Video Showcase */}
+            <video
+                ref={videoRef}
+                key={currentVideo}
+                src={currentVideo}
+                autoPlay
+                muted={isMuted}
+                loop
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover filter brightness-90 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
+            />
+
+            {/* Dark Aesthetic Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-black/30 to-black/60 pointer-events-none" />
+
+            {/* Top Bar: Live DJ Preview Badge & Audio Visualizer Bars */}
+            <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] sm:text-xs font-bold tracking-wider uppercase text-white shadow-lg">
+                    <span className={`w-2 h-2 rounded-full animate-pulse ${
+                        isGold ? "bg-amber-400" : isSilver ? "bg-slate-200" : "bg-[#F70776]"
+                    }`} />
+                    <span>Live DJ Footage</span>
+                </div>
+
+                {/* Animated Equalizer Waveform */}
+                <div className="flex items-end gap-1 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
+                    <span className="w-1 bg-[#F70776] rounded-full animate-bounce h-2.5" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1 bg-[#25D366] rounded-full animate-bounce h-4" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1 bg-amber-400 rounded-full animate-bounce h-3" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1 bg-[#F70776] rounded-full animate-bounce h-4.5" style={{ animationDelay: '450ms' }} />
+                </div>
+            </div>
+
+            {/* Bottom Bar: Sound Toggle & Clip Switcher */}
+            <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                    {/* Unmute / Mute Audio Controller */}
+                    <button
+                        onClick={toggleMute}
+                        className="px-3.5 py-1.5 rounded-full bg-black/75 hover:bg-[#F70776] backdrop-blur-md border border-white/20 text-white text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg cursor-pointer"
+                        title={isMuted ? "Unmute sound" : "Mute sound"}
+                    >
+                        {isMuted ? (
+                            <>
+                                <span className="text-xs">🔇</span>
+                                <span className="text-[10px] uppercase tracking-wider font-bold">Unmute Audio</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-xs">🔊</span>
+                                <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-300">Live Sound ON</span>
+                            </>
+                        )}
+                    </button>
+
+                    <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-[#141010]/80 text-[#BDB2B2] border border-white/10 hidden sm:inline-block">
+                        {plan.name} Array
+                    </span>
+                </div>
+
+                {/* Multi Video Dots & Reel Switcher */}
+                {videoList.length > 1 && (
+                    <div className="flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
+                        {videoList.map((_, dotIdx) => (
+                            <button
+                                key={dotIdx}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentIdx(dotIdx);
+                                }}
+                                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                                    dotIdx === currentIdx
+                                        ? "bg-[#F70776] w-4"
+                                        : "bg-white/40 hover:bg-white w-1.5"
+                                }`}
+                                title={`Clip ${dotIdx + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 export default function Services() {
     const [services, setServices] = useState(DEFAULT_SERVICES);
@@ -514,13 +667,13 @@ export default function Services() {
         .card-gold { animation: goldGlow 3s infinite ease-in-out; }
       `}</style>
 
-                <div className="max-w-[90rem] mx-auto">
+                <div className="max-w-6xl mx-auto">
                     {/* Section Header Controls */}
                     <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 mb-12">
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#2B2323] bg-[#1C1717] text-xs font-semibold uppercase tracking-wider text-[#A69B9B] mb-3">
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#F70776]" />
-                                Pricing Table
+                                DJ Event Packages
                             </div>
                             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#FAF6F6]">
                                 Pricing That Scales <br />
@@ -578,143 +731,182 @@ export default function Services() {
                         </div>
                     </div>
 
-                    {/* Plans Grid Layout - Responsive 1 to 5 columns */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-5 items-stretch">
+                    {/* Vertically Aligned Plans List with Left-Side Video Showcase */}
+                    <div className="flex flex-col space-y-8 lg:space-y-10">
                         {plans.map((plan, idx) => {
                             const isSilver = plan.theme === "silver";
                             const isGold = plan.theme === "gold";
 
                             return (
                                 <div
-                                    key={idx}
-                                    className={`relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 border ${isSilver
-                                        ? "card-silver bg-gradient-to-b from-[#2A2D32] via-[#1C1E22] to-[#141010] border-slate-300/60 lg:-translate-y-2 z-10"
+                                    key={plan.id || idx}
+                                    className={`relative rounded-3xl p-5 sm:p-7 lg:p-8 transition-all duration-500 border ${isSilver
+                                        ? "card-silver bg-gradient-to-br from-[#24272C] via-[#1A1C20] to-[#120F0F] border-slate-300/60 shadow-2xl hover:shadow-[0_0_40px_rgba(226,232,240,0.2)]"
                                         : isGold
-                                            ? "card-gold bg-gradient-to-b from-[#332A15] via-[#1F1A10] to-[#141010] border-amber-400/80 lg:-translate-y-2 z-10"
-                                            : "bg-[#1C1717] border-[#2B2323] hover:border-[#C3195D]/60"
+                                            ? "card-gold bg-gradient-to-br from-[#2B2312] via-[#1D170D] to-[#120F0F] border-amber-400/80 shadow-2xl hover:shadow-[0_0_40px_rgba(234,179,8,0.3)]"
+                                            : "bg-[#1C1717] border-[#2B2323] hover:border-[#C3195D]/70 shadow-2xl hover:shadow-[0_0_30px_rgba(247,7,118,0.15)]"
                                         }`}
                                 >
-                                    <div>
-                                        {/* Top Badge */}
-                                        <div className="flex items-center justify-between gap-2 mb-4">
-                                            <span
-                                                className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${isSilver
-                                                    ? "bg-slate-200 text-black shadow-md"
-                                                    : isGold
-                                                        ? "bg-gradient-to-r from-amber-300 to-yellow-500 text-black font-black shadow-md"
-                                                        : "bg-[#141010] text-[#A69B9B] border border-[#2B2323]"
-                                                    }`}
-                                            >
-                                                {plan.badge}
-                                            </span>
+                                    {/* 2-Column Responsive Layout */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                                        {/* LEFT SIDE: Auto-Scrolling Video Showcase */}
+                                        <div className="lg:col-span-5 flex flex-col">
+                                            <PlanVideoShowcase plan={plan} isSilver={isSilver} isGold={isGold} />
                                         </div>
 
-                                        {/* Plan Header */}
-                                        <h3
-                                            className={`text-2xl font-black uppercase tracking-tight mb-2 ${isSilver
-                                                ? "text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400"
-                                                : isGold
-                                                    ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-500"
-                                                    : "text-[#FAF6F6]"
-                                                }`}
-                                        >
-                                            {plan.name}
-                                        </h3>
-                                        <p className="text-xs text-[#BDB2B2] font-light leading-relaxed mb-6 min-h-[36px]">
-                                            {plan.desc}
-                                        </p>
-
-                                        {/* Price Tag */}
-                                        <div className="mb-6 flex items-baseline gap-1">
-                                            <span
-                                                className={`text-4xl font-black ${isSilver
-                                                    ? "text-white"
-                                                    : isGold
-                                                        ? "text-amber-300"
-                                                        : "text-[#FAF6F6]"
-                                                    }`}
-                                            >
-                                                {billingCycle === "monthly" ? (plan.monthlyPrice || plan.price) : (plan.yearlyPrice || plan.price)}
-                                            </span>
-                                            <span className="text-xs text-[#A69B9B]">
-                                                {plan.period || "/ event"}
-                                            </span>
-                                        </div>
-
-                                        {/* Action CTA Button */}
-                                        <button
-                                            onClick={() => {
-                                                const el = document.getElementById("contacts") || document.getElementById("contact");
-                                                if (el) el.scrollIntoView({ behavior: "smooth" });
-                                            }}
-                                            className={`w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md mb-8 cursor-pointer ${isSilver
-                                                ? "bg-gradient-to-r from-slate-100 via-slate-300 to-slate-200 hover:from-white hover:to-slate-100 text-black font-black shadow-[0_0_20px_rgba(226,232,240,0.4)]"
-                                                : isGold
-                                                    ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-black shadow-[0_0_20px_rgba(234,179,8,0.4)]"
-                                                    : "bg-[#C3195D] hover:bg-[#F70776] text-white"
-                                                }`}
-                                        >
-                                            {plan.buttonText}
-                                        </button>
-
-                                        <div
-                                            className={`w-full h-px mb-6 ${isSilver
-                                                ? "bg-slate-400/30"
-                                                : isGold
-                                                    ? "bg-amber-400/30"
-                                                    : "bg-[#2B2323]"
-                                                }`}
-                                        />
-
-                                        {/* Features List */}
-                                        <ul className="space-y-3.5 text-xs">
-                                            {plan.features.map((feat, fIdx) => (
-                                                <li key={fIdx} className="flex items-start gap-2.5">
-                                                    {feat.included ? (
-                                                        <svg
-                                                            className={`w-4 h-4 shrink-0 mt-0.5 ${isSilver
-                                                                ? "text-slate-200"
-                                                                : isGold
-                                                                    ? "text-amber-400"
-                                                                    : "text-[#F70776]"
-                                                                }`}
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="2.5"
-                                                                d="M5 13l4 4L19 7"
-                                                            />
-                                                        </svg>
-                                                    ) : (
-                                                        <svg
-                                                            className="w-4 h-4 shrink-0 mt-0.5 text-[#A69B9B]/40"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="2"
-                                                                d="M6 18L18 6M6 6l12 12"
-                                                            />
-                                                        </svg>
-                                                    )}
+                                        {/* RIGHT SIDE: Plan Details, Pricing & Inclusions */}
+                                        <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+                                            <div className="space-y-4">
+                                                {/* Top Badges */}
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
                                                     <span
-                                                        className={`${feat.included
-                                                            ? "text-[#FAF6F6] font-medium"
-                                                            : "text-[#A69B9B]/50 line-through font-light"
+                                                        className={`text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full ${isSilver
+                                                            ? "bg-slate-200 text-black shadow-md"
+                                                            : isGold
+                                                                ? "bg-gradient-to-r from-amber-300 to-yellow-500 text-black font-black shadow-md"
+                                                                : "bg-[#141010] text-[#A69B9B] border border-[#2B2323]"
                                                             }`}
                                                     >
-                                                        {feat.text}
+                                                        {plan.badge}
                                                     </span>
-                                                </li>
-                                            ))}
-                                        </ul>
+
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#A69B9B] flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-[#F70776]" />
+                                                        {plan.theme === 'gold' ? 'Ultra VIP Tier' : plan.theme === 'silver' ? 'Concert Grade' : 'Signature Tier'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Plan Header */}
+                                                <div>
+                                                    <h3
+                                                        className={`text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight ${isSilver
+                                                            ? "text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400"
+                                                            : isGold
+                                                                ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 via-amber-300 to-yellow-500"
+                                                                : "text-[#FAF6F6]"
+                                                            }`}
+                                                    >
+                                                        {plan.name}
+                                                    </h3>
+                                                    <p className="text-xs sm:text-sm text-[#BDB2B2] font-light leading-relaxed mt-2">
+                                                        {plan.desc}
+                                                    </p>
+                                                </div>
+
+                                                {/* Price Display */}
+                                                <div className="flex items-baseline gap-2 pt-1">
+                                                    <span
+                                                        className={`text-3xl sm:text-4xl font-black ${isSilver
+                                                            ? "text-white"
+                                                            : isGold
+                                                                ? "text-amber-300"
+                                                                : "text-[#FAF6F6]"
+                                                            }`}
+                                                    >
+                                                        {billingCycle === "monthly" ? (plan.monthlyPrice || plan.price) : (plan.yearlyPrice || plan.price)}
+                                                    </span>
+                                                    <span className="text-xs text-[#A69B9B]">
+                                                        {plan.period || "/ event"}
+                                                    </span>
+                                                    {billingCycle === "yearly" && (
+                                                        <span className="ml-2 text-[10px] font-bold text-[#F70776] bg-[#F70776]/15 border border-[#F70776]/30 px-2 py-0.5 rounded-full">
+                                                            20% Seasonal Discount Applied
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <div
+                                                    className={`w-full h-px ${isSilver
+                                                        ? "bg-slate-400/30"
+                                                        : isGold
+                                                            ? "bg-amber-400/30"
+                                                            : "bg-[#2B2323]"
+                                                        }`}
+                                                />
+
+                                                {/* Features Checklist in 2-Column Responsive Grid */}
+                                                <div>
+                                                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#A69B9B] block mb-2.5">
+                                                        Included In This Package:
+                                                    </span>
+                                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                                                        {plan.features?.map((feat, fIdx) => (
+                                                            <li key={fIdx} className="flex items-start gap-2">
+                                                                {feat.included ? (
+                                                                    <svg
+                                                                        className={`w-4 h-4 shrink-0 mt-0.5 ${isSilver
+                                                                            ? "text-slate-200"
+                                                                            : isGold
+                                                                                ? "text-amber-400"
+                                                                                : "text-[#F70776]"
+                                                                            }`}
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="2.5"
+                                                                            d="M5 13l4 4L19 7"
+                                                                        />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        className="w-4 h-4 shrink-0 mt-0.5 text-[#A69B9B]/30"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="2"
+                                                                            d="M6 18L18 6M6 6l12 12"
+                                                                        />
+                                                                    </svg>
+                                                                )}
+                                                                <span
+                                                                    className={`${feat.included
+                                                                        ? "text-[#FAF6F6] font-medium"
+                                                                        : "text-[#A69B9B]/40 line-through font-light"
+                                                                        }`}
+                                                                >
+                                                                    {feat.text}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            {/* Action CTA Button & Guarantee Strip */}
+                                            <div className="pt-3 border-t border-[#2B2323] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                                                <div className="flex items-center gap-3 text-[11px] text-[#A69B9B]">
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="text-[#25D366]">✓</span> Pro Acoustic Array
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="text-[#25D366]">✓</span> 100% Reliability
+                                                    </span>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        const el = document.getElementById("contacts") || document.getElementById("contact");
+                                                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                                                    }}
+                                                    className={`px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md cursor-pointer text-center ${isSilver
+                                                        ? "bg-gradient-to-r from-slate-100 via-slate-300 to-slate-200 hover:from-white hover:to-slate-100 text-black font-black shadow-[0_0_20px_rgba(226,232,240,0.4)]"
+                                                        : isGold
+                                                            ? "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-black shadow-[0_0_20px_rgba(234,179,8,0.4)]"
+                                                            : "bg-[#C3195D] hover:bg-[#F70776] text-white shadow-[0_0_15px_rgba(195,25,93,0.4)]"
+                                                        }`}
+                                                >
+                                                    {plan.buttonText || `Book ${plan.name}`}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             );
