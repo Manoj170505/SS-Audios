@@ -92,7 +92,10 @@ const DEFAULT_PLANS = [
         videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
         videos: [
             "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
-            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4"
         ],
         features: [
             { text: "3 Hours Live DJ Set", included: true },
@@ -117,7 +120,10 @@ const DEFAULT_PLANS = [
         videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
         videos: [
             "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
-            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4"
         ],
         features: [
             { text: "5 Hours Live DJ Set", included: true },
@@ -142,7 +148,10 @@ const DEFAULT_PLANS = [
         videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
         videos: [
             "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
-            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4"
         ],
         features: [
             { text: "7 Hours Live DJ Performance", included: true },
@@ -167,7 +176,10 @@ const DEFAULT_PLANS = [
         videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
         videos: [
             "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
-            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4"
         ],
         features: [
             { text: "Full Night Live DJ Set (Up to 10h)", included: true },
@@ -192,7 +204,10 @@ const DEFAULT_PLANS = [
         videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
         videos: [
             "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
-            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4"
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41552-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4"
         ],
         features: [
             { text: "Unlimited Performance Duration", included: true },
@@ -207,74 +222,70 @@ const DEFAULT_PLANS = [
 ];
 
 function PlanVideoShowcase({ plan, isSilver, isGold }) {
+    // 4 to 5 videos array
     const videoList = Array.isArray(plan.videos) && plan.videos.length > 0
         ? plan.videos
-        : [plan.videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4"];
+        : [
+            plan.videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-dj-mixing-music-41337-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-dj-mixing-music-on-stage-41339-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-stage-lights-and-crowd-at-a-concert-41550-large.mp4",
+            "https://assets.mixkit.co/videos/preview/mixkit-laser-lights-in-a-stage-show-41551-large.mp4"
+        ];
 
-    const [currentIdx, setCurrentIdx] = useState(0);
+    // Ensure we have at least 4-5 items for the continuous marquee
+    const fullVideos = videoList.length >= 4 ? videoList : [...videoList, ...videoList].slice(0, 5);
+    // Double list for seamless infinite loop
+    const loopedVideos = [...fullVideos, ...fullVideos];
+
     const [isMuted, setIsMuted] = useState(true);
-    const videoRef = React.useRef(null);
+    const [activeVideoUrl, setActiveVideoUrl] = useState(null);
 
-    // Auto-scroll/cycle across videos if multiple clips exist
-    useEffect(() => {
-        if (videoList.length <= 1) return;
-        const interval = setInterval(() => {
-            setCurrentIdx((prev) => (prev + 1) % videoList.length);
-        }, 7000);
-        return () => clearInterval(interval);
-    }, [videoList.length]);
-
-    useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.muted = isMuted;
-            videoRef.current.play().catch(() => {});
-        }
-    }, [currentIdx, isMuted]);
-
-    const toggleMute = (e) => {
+    const toggleMuteAll = (e) => {
         e.stopPropagation();
-        if (videoRef.current) {
-            videoRef.current.muted = !isMuted;
-            setIsMuted(!isMuted);
-        }
+        setIsMuted(prev => !prev);
     };
 
-    const currentVideo = videoList[currentIdx] || videoList[0];
-
     return (
-        <div className={`relative w-full h-72 sm:h-80 lg:h-full min-h-[320px] lg:min-h-[400px] rounded-3xl overflow-hidden bg-black/90 border flex flex-col justify-between group shadow-2xl transition-all duration-500 ${
+        <div className={`relative w-full h-80 sm:h-96 lg:h-full min-h-[340px] lg:min-h-[420px] rounded-3xl overflow-hidden bg-[#0D0B0B] border flex flex-col justify-between group shadow-2xl transition-all duration-500 ${
             isSilver
                 ? "border-slate-300/40"
                 : isGold
                     ? "border-amber-400/50"
                     : "border-[#2B2323] group-hover:border-[#F70776]/50"
         }`}>
-            {/* Auto-playing, Looping Video Showcase */}
-            <video
-                ref={videoRef}
-                key={currentVideo}
-                src={currentVideo}
-                autoPlay
-                muted={isMuted}
-                loop
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover filter brightness-90 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
-            />
+            {/* Keyframe for Left to Right Smooth Infinite Auto-Scrolling */}
+            <style>{`
+                @keyframes scrollLeftToRight {
+                    0% {
+                        transform: translateX(-50%);
+                    }
+                    100% {
+                        transform: translateX(0%);
+                    }
+                }
+                .scrolling-video-track {
+                    display: flex;
+                    width: max-content;
+                    animation: scrollLeftToRight 28s linear infinite;
+                    will-change: transform;
+                }
+                .scrolling-video-track:hover {
+                    animation-play-state: paused;
+                }
+            `}</style>
 
-            {/* Dark Aesthetic Gradient Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-black/30 to-black/60 pointer-events-none" />
-
-            {/* Top Bar: Live DJ Preview Badge & Audio Visualizer Bars */}
-            <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] sm:text-xs font-bold tracking-wider uppercase text-white shadow-lg">
+            {/* Top Bar: Live DJ Preview Badge & Audio Waveform */}
+            <div className="relative z-20 p-4 sm:p-5 flex items-center justify-between gap-2 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-[10px] sm:text-xs font-bold tracking-wider uppercase text-white shadow-lg">
                     <span className={`w-2 h-2 rounded-full animate-pulse ${
                         isGold ? "bg-amber-400" : isSilver ? "bg-slate-200" : "bg-[#F70776]"
                     }`} />
-                    <span>Live DJ Footage</span>
+                    <span>{fullVideos.length} Stage Feeds • Auto-Streaming</span>
                 </div>
 
                 {/* Animated Equalizer Waveform */}
-                <div className="flex items-end gap-1 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
+                <div className="flex items-end gap-1 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10">
                     <span className="w-1 bg-[#F70776] rounded-full animate-bounce h-2.5" style={{ animationDelay: '0ms' }} />
                     <span className="w-1 bg-[#25D366] rounded-full animate-bounce h-4" style={{ animationDelay: '150ms' }} />
                     <span className="w-1 bg-amber-400 rounded-full animate-bounce h-3" style={{ animationDelay: '300ms' }} />
@@ -282,14 +293,55 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
                 </div>
             </div>
 
-            {/* Bottom Bar: Sound Toggle & Clip Switcher */}
-            <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between gap-3">
+            {/* Middle: CONTINUOUS AUTO-SCROLLING VIDEOS TRACK (LEFT TO RIGHT) */}
+            <div className="relative z-10 my-auto py-2 w-full overflow-hidden flex items-center">
+                {/* Left & Right Cinematic Vignette Masks */}
+                <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-[#0D0B0B] to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-[#0D0B0B] to-transparent z-10 pointer-events-none" />
+
+                <div className="scrolling-video-track flex items-center gap-3 sm:gap-4 px-2">
+                    {loopedVideos.map((videoSrc, vIdx) => (
+                        <div
+                            key={vIdx}
+                            onClick={() => setActiveVideoUrl(videoSrc)}
+                            className="relative w-44 sm:w-52 h-56 sm:h-64 rounded-2xl overflow-hidden bg-black/80 border border-white/15 shrink-0 group/card cursor-pointer shadow-xl transition-all duration-300 hover:scale-105 hover:border-[#F70776] hover:shadow-[0_0_25px_rgba(247,7,118,0.5)]"
+                        >
+                            {/* Autoplaying video */}
+                            <video
+                                src={videoSrc}
+                                autoPlay
+                                muted={isMuted}
+                                loop
+                                playsInline
+                                className="w-full h-full object-cover filter brightness-85 group-hover/card:brightness-100 transition-all duration-500"
+                            />
+
+                            {/* Inner Video Gradient & Badge */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+
+                            <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10">
+                                Cam 0{(vIdx % fullVideos.length) + 1}
+                            </div>
+
+                            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-white font-medium">
+                                <span className="text-[#FAF6F6]/80 text-[10px] font-bold">● LIVE</span>
+                                <span className="text-[9px] bg-[#F70776]/30 text-[#F70776] px-1.5 py-0.5 rounded border border-[#F70776]/40 font-bold">
+                                    4K HD
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Bottom Bar: Sound Toggle & Interaction Hints */}
+            <div className="relative z-20 p-4 sm:p-5 flex items-center justify-between gap-3 bg-gradient-to-t from-black/90 to-transparent">
                 <div className="flex items-center gap-2">
                     {/* Unmute / Mute Audio Controller */}
                     <button
-                        onClick={toggleMute}
-                        className="px-3.5 py-1.5 rounded-full bg-black/75 hover:bg-[#F70776] backdrop-blur-md border border-white/20 text-white text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg cursor-pointer"
-                        title={isMuted ? "Unmute sound" : "Mute sound"}
+                        onClick={toggleMuteAll}
+                        className="px-3.5 py-1.5 rounded-full bg-black/80 hover:bg-[#F70776] backdrop-blur-md border border-white/20 text-white text-xs font-semibold flex items-center gap-2 transition-all duration-300 shadow-lg cursor-pointer"
+                        title={isMuted ? "Unmute all videos" : "Mute all videos"}
                     >
                         {isMuted ? (
                             <>
@@ -305,30 +357,13 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
                     </button>
 
                     <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-[#141010]/80 text-[#BDB2B2] border border-white/10 hidden sm:inline-block">
-                        {plan.name} Array
+                        {plan.name} Live Array
                     </span>
                 </div>
 
-                {/* Multi Video Dots & Reel Switcher */}
-                {videoList.length > 1 && (
-                    <div className="flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
-                        {videoList.map((_, dotIdx) => (
-                            <button
-                                key={dotIdx}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCurrentIdx(dotIdx);
-                                }}
-                                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                                    dotIdx === currentIdx
-                                        ? "bg-[#F70776] w-4"
-                                        : "bg-white/40 hover:bg-white w-1.5"
-                                }`}
-                                title={`Clip ${dotIdx + 1}`}
-                            />
-                        ))}
-                    </div>
-                )}
+                <span className="text-[10px] text-[#A69B9B] font-medium hidden sm:inline-block">
+                    Hover to pause scroll
+                </span>
             </div>
         </div>
     );
@@ -338,8 +373,6 @@ export default function Services() {
     const [services, setServices] = useState(DEFAULT_SERVICES);
     const [plans, setPlans] = useState(DEFAULT_PLANS);
     const [selectedServiceId, setSelectedServiceId] = useState(1);
-    const [billingCycle, setBillingCycle] = useState("monthly"); // 'monthly' | 'yearly'
-    const [activeTab, setActiveTab] = useState("individual"); // 'individual' | 'teams'
 
     useEffect(() => {
         // Fetch Live Services
@@ -668,67 +701,21 @@ export default function Services() {
       `}</style>
 
                 <div className="max-w-6xl mx-auto">
-                    {/* Section Header Controls */}
-                    <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6 mb-12">
-                        <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#2B2323] bg-[#1C1717] text-xs font-semibold uppercase tracking-wider text-[#A69B9B] mb-3">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#F70776]" />
-                                DJ Event Packages
-                            </div>
-                            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#FAF6F6]">
-                                Pricing That Scales <br />
-                                <span className="text-[#F70776]">With Your Event</span>
-                            </h2>
+                    {/* Section Header */}
+                    <div className="text-center max-w-3xl mx-auto mb-14">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#2B2323] bg-[#1C1717] text-xs font-semibold uppercase tracking-wider text-[#A69B9B] mb-3">
+                            <span className="w-2 h-2 rounded-full bg-[#F70776] animate-pulse" />
+                            DJ Event Packages
                         </div>
-
-                        <div className="flex flex-wrap items-center gap-4">
-                            {/* Category Filter Pills */}
-                            <div className="flex items-center bg-[#1C1717] border border-[#2B2323] p-1 rounded-full text-xs font-medium text-[#A69B9B]">
-                                <button
-                                    onClick={() => setActiveTab("individual")}
-                                    className={`px-4 py-1.5 rounded-full transition-colors ${activeTab === "individual"
-                                        ? "bg-[#2B2323] text-white"
-                                        : "hover:text-white"
-                                        }`}
-                                >
-                                    Individual
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab("teams")}
-                                    className={`px-4 py-1.5 rounded-full transition-colors ${activeTab === "teams"
-                                        ? "bg-[#2B2323] text-white"
-                                        : "hover:text-white"
-                                        }`}
-                                >
-                                    Venues & Teams
-                                </button>
-                            </div>
-
-                            {/* Monthly / Yearly Billing Toggle */}
-                            <div className="flex items-center gap-3 bg-[#1C1717] border border-[#2B2323] p-1.5 rounded-full">
-                                <button
-                                    onClick={() => setBillingCycle("monthly")}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${billingCycle === "monthly"
-                                        ? "bg-[#C3195D] text-white shadow-md"
-                                        : "text-[#A69B9B] hover:text-white"
-                                        }`}
-                                >
-                                    Single Event
-                                </button>
-                                <button
-                                    onClick={() => setBillingCycle("yearly")}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${billingCycle === "yearly"
-                                        ? "bg-[#C3195D] text-white shadow-md"
-                                        : "text-[#A69B9B] hover:text-white"
-                                        }`}
-                                >
-                                    <span>Tour / Season</span>
-                                    <span className="bg-[#F70776] text-[10px] text-white font-black px-2 py-0.5 rounded-full">
-                                        SAVE 20%
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
+                        <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-[#FAF6F6] leading-tight">
+                            Pricing That Scales <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F70776] via-[#C3195D] to-[#F70776]">
+                                With Your Event
+                            </span>
+                        </h2>
+                        <p className="text-xs sm:text-sm text-[#A69B9B] font-light mt-3 max-w-xl mx-auto">
+                            Transparent pricing tailored for intimate gatherings, club stages, corporate banquets, and massive festivals.
+                        </p>
                     </div>
 
                     {/* Vertically Aligned Plans List with Left-Side Video Showcase */}
@@ -803,16 +790,11 @@ export default function Services() {
                                                                 : "text-[#FAF6F6]"
                                                             }`}
                                                     >
-                                                        {billingCycle === "monthly" ? (plan.monthlyPrice || plan.price) : (plan.yearlyPrice || plan.price)}
+                                                        {plan.monthlyPrice || plan.price}
                                                     </span>
                                                     <span className="text-xs text-[#A69B9B]">
                                                         {plan.period || "/ event"}
                                                     </span>
-                                                    {billingCycle === "yearly" && (
-                                                        <span className="ml-2 text-[10px] font-bold text-[#F70776] bg-[#F70776]/15 border border-[#F70776]/30 px-2 py-0.5 rounded-full">
-                                                            20% Seasonal Discount Applied
-                                                        </span>
-                                                    )}
                                                 </div>
 
                                                 <div
