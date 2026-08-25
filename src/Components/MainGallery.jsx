@@ -164,7 +164,7 @@ export default function GallerySection() {
                         LIVE MEDIA VAULT
                     </span>
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[#FAF6F6] mb-3">
-                        SOUNDSCAPE GALLERY
+                        SS AUDIOS GALLERY
                     </h2>
                     <p className="text-[#BDB2B2] text-sm max-w-md font-light mb-8">
                         Explore our latest audio mixes, festival visuals, stage lighting, and production moments synced live from AWS.

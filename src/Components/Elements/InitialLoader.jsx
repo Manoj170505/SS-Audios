@@ -171,7 +171,7 @@ export default function InitialLoader({ onFinish }) {
         {/* Brand Title */}
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white drop-shadow-[0_0_25px_rgba(247,7,118,0.7)]">
-            SOUND<span className="text-[#f70776]">SCAPE</span>
+            SS <span className="text-[#f70776]">AUDIOS</span>
           </h1>
           <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-[#BDB2B2] font-semibold">
             Live Audio & Stage Production
@@ -198,7 +198,7 @@ export default function InitialLoader({ onFinish }) {
         </div>
 
         <span className="text-[9px] uppercase tracking-widest text-[#6B6161] font-mono">
-          SOUNDSCAPE AUDIO SYSTEMS • 45 RPM ROTATING VINYL
+          SS AUDIOS LIVE PRODUCTION • 45 RPM ROTATING VINYL
         </span>
       </div>
     </div>
