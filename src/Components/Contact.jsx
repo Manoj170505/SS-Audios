@@ -49,7 +49,7 @@ export default function ContactUsPage() {
     };
 
     // Helper for fetch with timeout
-    const fetchWithTimeout = async (url, options, timeoutMs = 5000) => {
+    const fetchWithTimeout = async (url, options, timeoutMs = 12000) => {
       const controller = new AbortController();
       const timerId = setTimeout(() => controller.abort(), timeoutMs);
       try {
@@ -70,14 +70,14 @@ export default function ContactUsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      }, 5000);
+      }, 12000);
 
       const data = await res.json();
       if (res.ok && data.success) {
         succeeded = true;
       }
     } catch (err) {
-      console.warn("Primary contact endpoint failed or timed out:", err.message);
+      console.warn("Primary contact endpoint notification:", err.message);
     }
 
     // 2. If primary was slow/unreachable and on localhost, try local dev backend
