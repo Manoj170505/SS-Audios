@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://ss-audios-backend-production.up.railway.app/api";
@@ -50,10 +50,8 @@ const DEFAULT_GALLERY_ITEMS = [
 
 export default function VideoGallerySection() {
   const navigate = useNavigate();
-  const scrollRef = useRef(null);
   const [galleryItems, setGalleryItems] = useState(DEFAULT_GALLERY_ITEMS);
-
-  const SCROLL_SPEED = 4.2;
+  const [isPaused, setIsPaused] = useState(false);
 
   // Fetch live video assets from backend DynamoDB / S3
   useEffect(() => {
@@ -82,48 +80,45 @@ export default function VideoGallerySection() {
     fetchLiveMedia();
   }, []);
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    let animationFrameId;
-
-    const scroll = () => {
-      container.scrollLeft += SCROLL_SPEED;
-
-      if (container.scrollLeft >= container.scrollWidth / 2) {
-        container.scrollLeft = 0;
-      }
-
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-
-    animationFrameId = requestAnimationFrame(scroll);
-
-    const handleMouseEnter = () => cancelAnimationFrame(animationFrameId);
-    const handleMouseLeave = () => {
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-
-    container.addEventListener("mouseenter", handleMouseEnter);
-    container.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      if (container) {
-        container.removeEventListener("mouseenter", handleMouseEnter);
-        container.removeEventListener("mouseleave", handleMouseLeave);
-      }
-    };
-  }, [galleryItems]);
-
   const handleExploreFullGallery = () => {
     navigate("/gallery");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <section id="gallery" className="bg-[#141010] text-[#FAF6F6] py-20 px-4 sm:px-6 lg:px-8 overflow-hidden font-sans border-b border-[#2B2323] relative">
+    <section id="gallery" className="bg-[#141010] text-[#FAF6F6] py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden font-sans border-b border-[#2B2323] relative select-none">
+      {/* CSS Hardware-Accelerated Smooth Marquee Animation (Flicker-Free on Mobile) */}
+      <style>{`
+        @keyframes galleryMarqueeScroll {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+
+        .gallery-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: galleryMarqueeScroll 32s linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+
+        .gallery-marquee-track.is-paused {
+          animation-play-state: paused !important;
+        }
+
+        @media (max-width: 640px) {
+          .gallery-marquee-track {
+            animation-duration: 22s;
+          }
+        }
+      `}</style>
+
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#F70776]/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -143,89 +138,86 @@ export default function VideoGallerySection() {
           </h2>
 
           <p className="text-[#BDB2B2] text-sm sm:text-base font-light leading-relaxed">
-            Experience the energy from our recent shows. Hover over any video
-            card to pause scrolling and view the set highlights.
+            Experience the energy from our recent shows. Touch or hover over any card to pause scrolling and view highlights.
           </p>
         </div>
 
-        {/* Straight Horizontal Carousel Wrapper */}
-        <div className="relative overflow-hidden py-4">
-          {/* Scroll Track */}
-          <div
-            ref={scrollRef}
-            className="flex items-center gap-5 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth py-4 px-2"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
-            {/* Duplicate array for smooth infinite loop */}
-            {[...galleryItems, ...galleryItems, ...galleryItems].map(
-              (item, idx) => (
-                <div
-                  key={`${item.id}-${idx}`}
-                  className="relative shrink-0 w-64 sm:w-72 lg:w-80 h-96 sm:h-[420px] rounded-3xl overflow-hidden border border-[#2B2323] hover:border-[#F70776] transition-all duration-300 transform hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(247,7,118,0.25)] bg-[#1C1717] group"
-                >
-                  {/* Playing Video or Photo */}
-                  {item.type === "image" ? (
-                    <img
-                      src={item.video}
-                      alt={item.title}
-                      className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
-                    />
-                  ) : (
-                    <video
-                      src={item.video}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
-                    />
-                  )}
+        {/* Straight Horizontal Marquee Wrapper with Stable Masks */}
+        <div
+          className="relative overflow-hidden py-4 -mx-4 sm:mx-0"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          {/* Edge shadow fades */}
+          <div className="absolute top-0 left-0 bottom-0 w-10 sm:w-28 bg-gradient-to-r from-[#141010] to-transparent pointer-events-none z-20" />
+          <div className="absolute top-0 right-0 bottom-0 w-10 sm:w-28 bg-gradient-to-l from-[#141010] to-transparent pointer-events-none z-20" />
 
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/30 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-300" />
+          {/* Hardware-Accelerated Smooth 2-Set Infinite Track */}
+          <div className={`gallery-marquee-track ${isPaused ? "is-paused" : ""}`}>
+            {[...galleryItems, ...galleryItems].map((item, idx) => (
+              <div
+                key={`${item.id}-${idx}`}
+                onClick={handleExploreFullGallery}
+                className="relative shrink-0 mx-2.5 sm:mx-3.5 w-60 sm:w-72 lg:w-80 h-84 sm:h-[400px] rounded-3xl overflow-hidden border border-[#2B2323] hover:border-[#F70776] transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-[0_10px_30px_rgba(247,7,118,0.3)] bg-[#1C1717] group cursor-pointer"
+                style={{ transform: "translateZ(0)" }}
+              >
+                {/* Media Component */}
+                {item.type === "image" ? (
+                  <img
+                    src={item.video}
+                    alt={item.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
+                  />
+                ) : (
+                  <video
+                    src={item.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover filter contrast-110 brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
+                  />
+                )}
 
-                  {/* Top Category Badge */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#141010]/80 backdrop-blur-md border border-white/10 text-white">
-                      {item.category}
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/35 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-300" />
+
+                {/* Top Category Badge */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#141010]/80 backdrop-blur-md border border-white/10 text-white shadow-md">
+                    {item.category}
+                  </span>
+                </div>
+
+                {/* Play Button Hover FX */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-[#F70776] text-white flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-[0_0_20px_rgba(247,7,118,0.8)]">
+                  <svg
+                    className="w-5 h-5 fill-current ml-0.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+
+                {/* Bottom Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-10">
+                  <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-tight group-hover:text-[#F70776] transition-colors line-clamp-1">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1.5 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F70776] animate-pulse" />
+                    <span className="text-[11px] text-[#A69B9B] uppercase font-semibold tracking-wider">
+                      Watch Performance
                     </span>
                   </div>
-
-                  {/* Play Button Hover FX */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-[#F70776] text-white flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-[0_0_20px_rgba(247,7,118,0.8)]">
-                    <svg
-                      className="w-5 h-5 fill-current ml-0.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-
-                  {/* Bottom Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-                    <h3 className="text-base sm:text-lg font-bold text-white uppercase tracking-tight group-hover:text-[#F70776] transition-colors">
-                      {item.title}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="w-2 h-2 rounded-full bg-[#F70776] animate-pulse" />
-                      <span className="text-xs text-[#A69B9B] uppercase font-semibold tracking-wider">
-                        Watch Performance
-                      </span>
-                    </div>
-                  </div>
                 </div>
-              ),
-            )}
+              </div>
+            ))}
           </div>
-
-          {/* Left Side Shadow Fade */}
-          <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-28 bg-gradient-to-r from-[#141010] to-transparent pointer-events-none z-20" />
-
-          {/* Right Side Shadow Fade */}
-          <div className="absolute top-0 right-0 bottom-0 w-12 sm:w-28 bg-gradient-to-l from-[#141010] to-transparent pointer-events-none z-20" />
         </div>
 
         {/* Explore Gallery Button Below Carousel */}
@@ -256,4 +248,3 @@ export default function VideoGallerySection() {
     </section>
   );
 }
-
