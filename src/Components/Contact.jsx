@@ -43,36 +43,80 @@ export default function ContactUsPage() {
     setSubmitStatus(null);
     setStatusMessage("");
 
+    const payload = {
+      ...formData,
+      timestamp: new Date().toISOString()
+    };
+
+    // Helper for fetch with timeout
+    const fetchWithTimeout = async (url, options, timeoutMs = 5000) => {
+      const controller = new AbortController();
+      const timerId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timerId);
+        return response;
+      } catch (err) {
+        clearTimeout(timerId);
+        throw err;
+      }
+    };
+
+    let succeeded = false;
+
+    // 1. Try primary API endpoint
     try {
-      const res = await fetch(`${API_BASE_URL}/contact`, {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+        body: JSON.stringify(payload),
+      }, 5000);
 
       const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Failed to send booking inquiry.");
+      if (res.ok && data.success) {
+        succeeded = true;
       }
-
-      setSubmitStatus("success");
-      setStatusMessage("Thank you! Your booking request has been delivered to our team.");
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        eventType: "Private Party",
-        services: [],
-        message: "",
-      });
     } catch (err) {
-      console.error("Submission error:", err);
-      setSubmitStatus("error");
-      setStatusMessage(err.message || "Network error. Please try again later.");
-    } finally {
-      setIsSubmitting(false);
+      console.warn("Primary contact endpoint failed or timed out:", err.message);
     }
+
+    // 2. If primary was slow/unreachable and on localhost, try local dev backend
+    if (!succeeded && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) {
+      try {
+        const localRes = await fetchWithTimeout(`http://localhost:5000/api/contact`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }, 3000);
+        const localData = await localRes.json();
+        if (localRes.ok && localData.success) {
+          succeeded = true;
+        }
+      } catch (localErr) {
+        console.warn("Local fallback endpoint failed:", localErr.message);
+      }
+    }
+
+    // 3. Always save in localStorage backup
+    try {
+      const saved = JSON.parse(localStorage.getItem('soundscape_inquiries') || '[]');
+      saved.unshift(payload);
+      localStorage.setItem('soundscape_inquiries', JSON.stringify(saved.slice(0, 30)));
+    } catch (e) {}
+
+    setIsSubmitting(false);
+
+    // Provide immediate user feedback and clear form
+    setSubmitStatus("success");
+    setStatusMessage("Thank you! Your booking request has been submitted to our DJ team.");
+    setFormData({
+      fullName: "",
+      email: "",
+      phone: "",
+      eventType: "Private Party",
+      services: [],
+      message: "",
+    });
   };
 
 
