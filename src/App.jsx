@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import DJHomepage from "./Components/Home";
@@ -9,6 +9,7 @@ import ContactUsPage from "./Components/Contact";
 import Footer from "./Components/Footer";
 import GallerySection from "./Components/MainGallery";
 import FloatingWhatsApp from "./Components/Elements/FloatingWhatsApp";
+import InitialLoader from "./Components/Elements/InitialLoader";
 
 function ScrollToTopOnRoute() {
   const { pathname } = useLocation();
@@ -43,17 +44,32 @@ function GalleryPage() {
 }
 
 export function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <div className="flex flex-col w-full min-h-screen overflow-x-hidden bg-[#141010] text-[#FAF6F6] relative">
-      <ScrollToTopOnRoute />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/gallery" element={<GalleryPage />} />
-        <Route path="*" element={<HomePage />} />
-      </Routes>
-      <FloatingWhatsApp />
+      {/* Initial Website Loading Screen */}
+      {isLoading && (
+        <InitialLoader onFinish={() => setIsLoading(false)} />
+      )}
+
+      {/* Main Website Surface */}
+      <div
+        className={`flex flex-col w-full min-h-screen transition-all duration-700 ${
+          isLoading ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100"
+        }`}
+      >
+        <ScrollToTopOnRoute />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+        <FloatingWhatsApp />
+      </div>
     </div>
   );
 }
 
+export default App;
