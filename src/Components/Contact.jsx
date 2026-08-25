@@ -12,7 +12,7 @@ export default function ContactUsPage() {
     fullName: "",
     email: "",
     phone: "",
-    eventType: "Wedding Celebration",
+    corporateName: "",
     services: [],
     message: "",
   });
@@ -51,6 +51,7 @@ export default function ContactUsPage() {
 
     const payload = {
       ...formData,
+      eventType: formData.corporateName || "Corporate / Special Event",
       timestamp: new Date().toISOString()
     };
 
@@ -123,7 +124,7 @@ export default function ContactUsPage() {
       fullName: "",
       email: "",
       phone: "",
-      eventType: "Wedding Celebration",
+      corporateName: "",
       services: [],
       message: "",
     });
@@ -214,7 +215,7 @@ export default function ContactUsPage() {
                 </div>
               </div>
 
-              {/* Row 2: Phone & Event Type */}
+              {/* Row 2: Phone & Corporate Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#A69B9B]">
@@ -233,25 +234,17 @@ export default function ContactUsPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#A69B9B]">
-                    Event Type
+                    Corporate / Organization Name
                   </label>
-                  <select
-                    value={formData.eventType}
+                  <input
+                    type="text"
+                    placeholder="Enter corporate, organization, or event name..."
+                    value={formData.corporateName}
                     onChange={(e) =>
-                      setFormData({ ...formData, eventType: e.target.value })
+                      setFormData({ ...formData, corporateName: e.target.value })
                     }
-                    className="w-full bg-[#141010] border border-[#2B2323] focus:border-[#F70776] rounded-xl px-4 py-3 text-sm text-[#FAF6F6] outline-none transition-colors"
-                  >
-                    <option value="Wedding Celebration">Wedding Celebration</option>
-                    <option value="Orchestra / Musical Night">Orchestra / Musical Night</option>
-                    <option value="Audios & Stage Lighting Show">Audios & Stage Lighting Show</option>
-                    <option value="Corporate & College Fest">Corporate & College Fest</option>
-                    <option value="Welcome Dance & Cultural Event">Welcome Dance & Cultural Event</option>
-                    <option value="DJ Night & Club Event">DJ Night & Club Event</option>
-                    <option value="Instrumental Concert">Instrumental Concert</option>
-                    <option value="Private Party / Birthday">Private Party / Birthday</option>
-                    <option value="Other Special Event">Other Special Event</option>
-                  </select>
+                    className="w-full bg-[#141010] border border-[#2B2323] focus:border-[#F70776] rounded-xl px-4 py-3 text-sm text-[#FAF6F6] outline-none transition-colors placeholder-[#A69B9B]/40"
+                  />
                 </div>
               </div>
 
