@@ -77,12 +77,13 @@ const Navbar = () => {
                     onClick={handleLogoClick}
                     className="flex items-center space-x-3 cursor-pointer shrink-0 group"
                 >
-                    <div className="w-8 h-8 rounded-full bg-[#f70776] flex items-center justify-between px-1.5 py-2 transition-transform duration-300 group-hover:scale-105 shadow-[0_0_15px_rgba(247,7,118,0.5)]">
-                        <span className="w-1.5 h-1.5 bg-[#141010] rounded-full"></span>
-                        <span className="w-1.5 h-1.5 bg-[#141010] rounded-full"></span>
-                    </div>
-                    <span className="font-bold text-xl tracking-wide uppercase text-white group-hover:text-[#f70776] transition-colors">
-                        SS AUDIOS
+                    <img
+                        src="/SS.svg"
+                        alt="SS Audios"
+                        className="h-6 sm:h-7 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_12px_rgba(247,7,118,0.7)]"
+                    />
+                    <span className="font-extrabold text-lg sm:text-xl tracking-wider uppercase text-white group-hover:text-[#f70776] transition-colors">
+                        AUDIOS
                     </span>
                 </div>
 

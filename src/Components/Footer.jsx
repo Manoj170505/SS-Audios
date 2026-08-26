@@ -68,12 +68,13 @@ export default function Footer() {
                         onClick={handleBrandClick}
                         className="flex items-center gap-3 cursor-pointer group"
                     >
-                        <div className="w-9 h-9 rounded-full bg-[#f70776] flex items-center justify-between px-2 py-2.5 transition-transform duration-300 group-hover:scale-105 shadow-[0_0_15px_rgba(247,7,118,0.5)]">
-                            <span className="w-1.5 h-1.5 bg-[#141010] rounded-full" />
-                            <span className="w-1.5 h-1.5 bg-[#141010] rounded-full" />
-                        </div>
-                        <span className="font-black text-2xl tracking-wider uppercase text-white group-hover:text-[#f70776] transition-colors">
-                            SS AUDIOS
+                        <img
+                            src="/SS.svg"
+                            alt="SS Audios"
+                            className="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_18px_rgba(247,7,118,0.7)]"
+                        />
+                        <span className="font-black text-2xl sm:text-3xl tracking-wider uppercase text-white group-hover:text-[#f70776] transition-colors">
+                            AUDIOS
                         </span>
                     </div>
 

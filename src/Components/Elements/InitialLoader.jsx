@@ -135,10 +135,10 @@ export default function InitialLoader({ onFinish }) {
 
             {/* Central Vinyl Label (SS Audios Brand Hub in Pink #f70776) */}
             <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#c3195d] via-[#f70776] to-[#ff007f] border-2 border-black shadow-inner flex flex-col items-center justify-center text-center p-1.5 shadow-[0_0_15px_rgba(247,7,118,0.6)]">
-              <span className="text-[11px] sm:text-xs font-black text-white tracking-widest leading-none drop-shadow">SS</span>
-              <span className="text-[8px] sm:text-[9px] font-bold text-white/95 uppercase tracking-tight mt-0.5">AUDIOS</span>
+              <img src="/SS.svg" alt="SS Audios" className="h-3.5 sm:h-4 w-auto object-contain brightness-200 drop-shadow" />
+              <span className="text-[7px] sm:text-[8px] font-black text-white/95 uppercase tracking-widest mt-0.5">AUDIOS</span>
               {/* Center Spindle Hole */}
-              <div className="w-2.5 h-2.5 rounded-full bg-[#141010] border border-black/80 mt-1 shadow-inner" />
+              <div className="w-2 h-2 rounded-full bg-[#141010] border border-black/80 mt-0.5 shadow-inner" />
             </div>
           </div>
 
