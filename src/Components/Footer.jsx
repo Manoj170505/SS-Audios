@@ -12,12 +12,6 @@ export default function Footer() {
         { name: 'Contact Us', target: 'contacts', type: 'scroll' },
     ];
 
-    const socialLinks = [
-        { name: 'Facebook', icon: 'FB', href: '#' },
-        { name: 'Instagram', icon: 'IG', href: '#' },
-        { name: 'X / Twitter', icon: 'X', href: '#' },
-        { name: 'YouTube', icon: 'YT', href: '#' },
-    ];
 
     const handleNavClick = (link) => {
         if (link.type === 'route') {
@@ -91,19 +85,6 @@ export default function Footer() {
                         ))}
                     </nav>
 
-                    {/* Social Icons */}
-                    <div className="flex items-center justify-center gap-4 pt-2">
-                        {socialLinks.map((social) => (
-                            <a
-                                key={social.name}
-                                href={social.href}
-                                aria-label={social.name}
-                                className="w-10 h-10 rounded-full bg-[#141010] border border-[#2B2323] hover:border-[#f70776] text-[#A69B9B] hover:text-white flex items-center justify-center text-xs font-bold transition-all duration-300 hover:shadow-[0_0_15px_rgba(247,7,118,0.4)] hover:-translate-y-0.5"
-                            >
-                                {social.icon}
-                            </a>
-                        ))}
-                    </div>
 
                 </div>
 
