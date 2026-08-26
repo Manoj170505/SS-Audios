@@ -540,12 +540,8 @@ export default function Services() {
                                         {/* Gradient Overlay for Text Legibility */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-[#141010] via-[#141010]/50 to-transparent opacity-95" />
 
-                                        {/* Top Badges: ID & Price Badge Integrated */}
-                                        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between gap-2 z-10">
-                                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#141010]/85 backdrop-blur-md border border-white/10 text-white shadow-md">
-                                                0{service.id}
-                                            </span>
-
+                                        {/* Top Badges: Price Badge Integrated */}
+                                        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-end z-10">
                                             {/* Integrated Price Pill Badge */}
                                             <div className="px-3 py-1 rounded-full bg-[#F70776] text-white text-xs sm:text-sm font-black tracking-wide shadow-[0_0_15px_rgba(247,7,118,0.6)] flex items-center gap-1">
                                                 <span>{service.price}</span>
