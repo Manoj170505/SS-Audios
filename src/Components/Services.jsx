@@ -221,9 +221,21 @@ const DEFAULT_PLANS = [
     },
 ];
 
+const isImageMedia = (url) => {
+    if (!url || typeof url !== 'string') return false;
+    const clean = url.split('?')[0].toLowerCase();
+    return /\.(jpe?g|png|gif|webp|svg|bmp|avif|tiff)$/i.test(clean) || clean.includes('images.unsplash.com') || clean.includes('format=');
+};
+
+const isVideoMedia = (url) => {
+    if (!url || typeof url !== 'string') return false;
+    const clean = url.split('?')[0].toLowerCase();
+    return /\.(mp4|webm|ogg|mov|m4v|mkv)$/i.test(clean) || clean.includes('assets.mixkit.co/videos') || (!isImageMedia(url) && !url.endsWith('/'));
+};
+
 function PlanVideoShowcase({ plan, isSilver, isGold }) {
-    // 4 to 5 videos array
-    const videoList = Array.isArray(plan.videos) && plan.videos.length > 0
+    // 4 to 5 media items array (supporting both videos and images)
+    const mediaList = Array.isArray(plan.videos) && plan.videos.length > 0
         ? plan.videos
         : [
             plan.videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-party-41338-large.mp4",
@@ -234,12 +246,12 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
         ];
 
     // Ensure we have at least 4-5 items for the continuous marquee
-    const fullVideos = videoList.length >= 4 ? videoList : [...videoList, ...videoList].slice(0, 5);
+    const fullMedia = mediaList.length >= 4 ? mediaList : [...mediaList, ...mediaList].slice(0, 5);
     // Double list for seamless infinite loop
-    const loopedVideos = [...fullVideos, ...fullVideos];
+    const loopedMedia = [...fullMedia, ...fullMedia];
 
     const [isMuted, setIsMuted] = useState(true);
-    const [activeVideoUrl, setActiveVideoUrl] = useState(null);
+    const [activeMediaUrl, setActiveMediaUrl] = useState(null);
 
     const toggleMuteAll = (e) => {
         e.stopPropagation();
@@ -281,7 +293,7 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
                     <span className={`w-2 h-2 rounded-full animate-pulse ${
                         isGold ? "bg-amber-400" : isSilver ? "bg-slate-200" : "bg-[#F70776]"
                     }`} />
-                    <span>{fullVideos.length} Stage Feeds • Auto-Streaming</span>
+                    <span>{fullMedia.length} Media Feeds (Videos & Images) • Auto-Streaming</span>
                 </div>
 
                 {/* Animated Equalizer Waveform */}
@@ -293,44 +305,54 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
                 </div>
             </div>
 
-            {/* Middle: CONTINUOUS AUTO-SCROLLING VIDEOS TRACK (LEFT TO RIGHT) */}
+            {/* Middle: CONTINUOUS AUTO-SCROLLING MEDIA TRACK (LEFT TO RIGHT) */}
             <div className="relative z-10 my-auto py-2 w-full overflow-hidden flex items-center">
                 {/* Left & Right Cinematic Vignette Masks */}
                 <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-[#0D0B0B] to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-[#0D0B0B] to-transparent z-10 pointer-events-none" />
 
                 <div className="scrolling-video-track flex items-center gap-3 sm:gap-4 px-2">
-                    {loopedVideos.map((videoSrc, vIdx) => (
-                        <div
-                            key={vIdx}
-                            onClick={() => setActiveVideoUrl(videoSrc)}
-                            className="relative w-44 sm:w-52 h-56 sm:h-64 rounded-2xl overflow-hidden bg-black/80 border border-white/15 shrink-0 group/card cursor-pointer shadow-xl transition-all duration-300 hover:scale-105 hover:border-[#F70776] hover:shadow-[0_0_25px_rgba(247,7,118,0.5)]"
-                        >
-                            {/* Autoplaying video */}
-                            <video
-                                src={videoSrc}
-                                autoPlay
-                                muted={isMuted}
-                                loop
-                                playsInline
-                                className="w-full h-full object-cover filter brightness-85 group-hover/card:brightness-100 transition-all duration-500"
-                            />
+                    {loopedMedia.map((mediaSrc, vIdx) => {
+                        const isImg = isImageMedia(mediaSrc);
+                        return (
+                            <div
+                                key={vIdx}
+                                onClick={() => setActiveMediaUrl(mediaSrc)}
+                                className="relative w-44 sm:w-52 h-56 sm:h-64 rounded-2xl overflow-hidden bg-black/80 border border-white/15 shrink-0 group/card cursor-pointer shadow-xl transition-all duration-300 hover:scale-105 hover:border-[#F70776] hover:shadow-[0_0_25px_rgba(247,7,118,0.5)]"
+                            >
+                                {isImg ? (
+                                    <img
+                                        src={mediaSrc}
+                                        alt={`${plan.name} media`}
+                                        className="w-full h-full object-cover filter brightness-90 group-hover/card:brightness-100 transition-all duration-500"
+                                    />
+                                ) : (
+                                    <video
+                                        src={mediaSrc}
+                                        autoPlay
+                                        muted={isMuted}
+                                        loop
+                                        playsInline
+                                        className="w-full h-full object-cover filter brightness-85 group-hover/card:brightness-100 transition-all duration-500"
+                                    />
+                                )}
 
-                            {/* Inner Video Gradient & Badge */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+                                {/* Inner Gradient & Badge */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
-                            <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10">
-                                Cam 0{(vIdx % fullVideos.length) + 1}
+                                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10">
+                                    Feed 0{(vIdx % fullMedia.length) + 1}
+                                </div>
+
+                                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-white font-medium">
+                                    <span className="text-[#FAF6F6]/80 text-[10px] font-bold">● LIVE</span>
+                                    <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${isImg ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' : 'bg-[#F70776]/30 text-[#F70776] border-[#F70776]/40'}`}>
+                                        {isImg ? 'HD PHOTO' : '4K VIDEO'}
+                                    </span>
+                                </div>
                             </div>
-
-                            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-white font-medium">
-                                <span className="text-[#FAF6F6]/80 text-[10px] font-bold">● LIVE</span>
-                                <span className="text-[9px] bg-[#F70776]/30 text-[#F70776] px-1.5 py-0.5 rounded border border-[#F70776]/40 font-bold">
-                                    4K HD
-                                </span>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
@@ -362,9 +384,51 @@ function PlanVideoShowcase({ plan, isSilver, isGold }) {
                 </div>
 
                 <span className="text-[10px] text-[#A69B9B] font-medium hidden sm:inline-block">
-                    Hover to pause scroll
+                    Click card to expand • Hover to pause
                 </span>
             </div>
+
+            {/* LIGHTBOX POPUP MODAL FOR EXPANDED VIDEO / PHOTO VIEW */}
+            {activeMediaUrl && (
+                <div
+                    onClick={() => setActiveMediaUrl(null)}
+                    className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+                >
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        className="relative max-w-4xl w-full bg-[#141010] border border-[#f70776]/50 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(247,7,118,0.4)] flex flex-col"
+                    >
+                        <div className="flex items-center justify-between p-4 border-b border-[#2B2323] bg-black/60">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs uppercase font-extrabold text-[#f70776] tracking-wider">{plan.name}</span>
+                                <span className="text-xs text-gray-400">• Fullscreen Preview</span>
+                            </div>
+                            <button
+                                onClick={() => setActiveMediaUrl(null)}
+                                className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-[#f70776] text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="relative w-full max-h-[75vh] flex items-center justify-center bg-black">
+                            {isImageMedia(activeMediaUrl) ? (
+                                <img
+                                    src={activeMediaUrl}
+                                    alt={plan.name}
+                                    className="max-h-[70vh] w-auto object-contain"
+                                />
+                            ) : (
+                                <video
+                                    src={activeMediaUrl}
+                                    controls
+                                    autoPlay
+                                    className="max-h-[70vh] w-full object-contain"
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
